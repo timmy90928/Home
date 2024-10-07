@@ -5,6 +5,13 @@ from typing import Any, Union
 import math
 from hashlib import sha3_256
 from json import load, dump
+from pystray import MenuItem, Icon as _icon, Menu as StrayMenu
+from PIL import Image
+from threading import Thread
+import os
+from routes import request
+from utils.web import get_external_ip, get_local_ip
+
 def hash(text:str) -> str:
     return sha3_256(text.encode()).hexdigest()
 
@@ -58,13 +65,33 @@ class json:
         with open(self.path, 'w', encoding='utf-8') as f:
             dump(data, f, ensure_ascii=False, indent=4)
         return True
-def read_card_data() -> str:
-    """
-    Reads card data from the card reader.
-    """
-    input("請刷卡...")
-    return input()
 
+
+class SysTray(_icon):
+    def __init__(self, name):
+        super().__init__(name=name, title=name, icon=self.create_image(), menu=self.create_menu())
+
+    def start(self):
+        Thread(target=self.run, daemon=False).start()
+
+    def create_image(self):
+        image = Image.open("static/picture/house.ico")
+        return image
+    
+    def create_menu(self):
+        return StrayMenu(
+            MenuItem("結束", self.on_quit),
+            MenuItem("顯示IP", self.show_ip),
+            )
+
+    def on_quit(self, icon, item):
+        self.notify("伺服器已關閉","結束通知")
+        self.stop()
+        os._exit(0)
+    
+    def show_ip(self, icon, item):
+        self.notify(f"內網IP:{get_local_ip()}\n外網IP:{get_external_ip()}","IP通知")
+        
 def msgw(title:str="Title", text:str="contant", style:int=0, time:int=0) -> int:
     """
     ctypes.windll.user32.MessageBoxTimeoutW()

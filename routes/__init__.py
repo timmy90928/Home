@@ -2,7 +2,7 @@ from flask import Flask, Blueprint, render_template, request, url_for,redirect,m
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user as _current_user # https://ithelp.ithome.com.tw/articles/10328420
 from os import listdir, path, stat, remove ,getcwd
 from utils.db import database
-from utils.utils import json, now_time, datetime
+from utils.utils import SysTray, json, now_time, datetime
 # from utils.web import User
 from time import time
 
@@ -24,6 +24,7 @@ class User(UserMixin):
 
 ### Main App ###
 app = Flask("Home")
+systray = SysTray('Home')
 
 ### Configurations ###
 app.secret_key = '62940eecccdf094995b09e1191b6e0afdcba8ee3293a5c893e146d0a5cf43210' # home-by-timmy90928
