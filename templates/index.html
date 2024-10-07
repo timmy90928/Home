@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<head>
+    <title>Home</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='common.css') }}">
+</head>
+{% include 'common/header.html' %}
+<body>
+    <div class="header-section">
+        <div></div>
+        <div>首頁</div>
+        <div>關於我</div>
+    </div>
+    <div class="container">
+        {% for data in datas %}{% if data.split(".")[1] in  ('jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG', 'gif', 'GIF', 'bmp', 'svg', 'webp', 'avif', 'tiff')%}
+        <div class="header-section">
+            <h3>{{ data.split(".")[0] }}</h3>
+        </div>
+        <img src="/writable/{{ data }}" style="height: auto; width: 100%;"/>
+
+        {% endif %}{% endfor %}
+    </div>
+        
+    
+
+</body>
+{% include 'common/footer.html' %}
+</html>
+

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<style>
+    .mr {
+        margin-right: 30px;
+    }
+    img {
+        margin-left: 20px; 
+        width: 40px; 
+        height: 40px;
+    }
+
+    @media (max-width: 769px) {
+    .mr {
+        margin-right: 5px;
+    }
+    img {
+        margin-left: 5px; 
+        width: 40px; 
+        height: 40px;
+    }
+}
+</style>
+<html lang="zh-Hant-TW">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="{{ url_for('static', filename='common.css') }}">
+        <link rel="icon" href="{{ url_for('static', filename = 'picture/house.ico') }}" type="image/x-icon" >
+        <link rel="shortcut icon" href="{{ url_for('static', filename = 'picture/house.ico') }}" type="image/x-icon" >
+    </head>
+    <header>
+        <div><!-- left -->
+            <img src="{{ url_for('static', filename='picture/house.ico') }}" alt="圖示" class="icon">
+            <h2 class="to-home">{{ site_header_title }}的家庭管理系統</h2>
+        </div>
+        <div><!-- right -->
+            {% if login_user_name %}
+            <a >{{ login_user_name }}(</a>
+            <a href="/account/logout">登出</a>
+            <a class="mr"> ) </a>
+            {% else %}
+            <a href="/account/login" class="mr">登入</a>
+            {% endif %}
+
+        </div>
+
+    </header>
+</html>
+
+<script>
+    document.querySelectorAll('.icon').forEach(link => {
+        link.addEventListener('click', function(e) {
+            window.location.href = '/home';
+        });
+    });
+
+    // 顯示選擇的檔案名稱
+    document.getElementById('file-upload').addEventListener('change', function(e) {
+        var fileName = e.target.files[0] ? e.target.files[0].name : '選擇檔案';
+        document.querySelector('.file-upload-label').textContent = fileName;
+    });
+</script>
+
+<!-- 
+<div> <!- right https://wayne-blog.com/2022-11-21/pure-css-toggle-menu-icon/ ->
+    <a >{{ login_user_name }}(</a>
+    <a href="/logout">登出</a>
+    <a style="margin-right: 30px;"> ) </a>
+   <a href="#menu">選單</a>
+   <a href="#menu">選單</a>
+   <nav id="menu">
+       <ul>
+           <li><a href="#news">最新消息</a></li>
+           <li><a href="#concept">基本概念</a></li>
+           <li><a href="#video">教學影片</a></li>
+           <li><a href="#html">認識HTML</a></li>
+           <li><a href="#css">認識CSS</a></li>
+       </ul>
+   </nav>
+</div>
+
+-->

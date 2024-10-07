@@ -1,0 +1,16 @@
+{% if url %}
+<script>
+    window.onload = function() {
+        alert('{{message}}');
+        window.location.href = ' {{url}} ';
+    };
+   
+</script>
+{% else %}
+<script>
+    window.onload = function() {
+        alert('{{message}}');
+        window.history.back();
+    };
+</script>
+{% endif %}

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<head>
+    <title>修改類別</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='common.css') }}">
+</head>
+{% include 'common/header.html' %}
+<style>
+    td, th {
+        text-align: left;
+    }
+</style>
+<body>
+    <div class="container">
+        <form action="/accounting/editclass" method="post">
+            <div class="header-section">
+                <h3>新增類別</h3>
+            </div>
+            <div class="button-group">
+                <div>
+                    <input type='submit' value='修改' class="blue-button">
+                    <input type='reset'  value='重設' class="red-button">
+                </div>
+            </div>
+        </form>
+
+        <div class="header-section">
+            <h3>已新增</h3>
+        </div>
+        <h4>支出</h4>
+        <table>
+            <thead>
+                <tr>
+                    <th>類別</th>
+                    <th>細項</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for key, value in ie_e.items() %}
+                    <tr>
+                        <td>{{ key }}</td>
+                        <td>{{ value }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <h4>支出</h4>
+        <table>
+            <thead>
+                <tr>
+                    <th>類別</th>
+                    <th>細項</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for key, value in ie_i.items() %}
+                    <tr>
+                        <td>{{ key }}</td>
+                        <td>{{ value }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+    </div>
+</body>
+{% include 'common/footer.html' %}

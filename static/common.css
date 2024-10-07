@@ -1,0 +1,243 @@
+
+/* header */
+header {
+    margin: 0; 
+    width: 100%;
+}
+header, header div, header a {
+    background-color: #024991;
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+
+    display: flex;
+    align-items: center; /* 垂直置中 */
+    justify-content:Space-between;
+    text-decoration: none;
+
+}
+
+header h2 {
+    margin: 0;
+    text-align: center;
+    font-size: 22px;
+}
+@media (max-width: 769px) {
+    header h2  {
+        font-size: 16px;
+    }
+}
+
+/* footer */
+footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+    font-size: 16px;
+}
+
+footer p {
+    margin: 5px 0;
+}
+
+/* body */
+body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    background-color: #e9ecef;
+    margin: 0;
+    padding: 0;
+}
+
+/* container */
+.container {
+    /* width: 100%; */
+    margin: auto 10px;
+    padding: 20px;
+    /* justify-content: center; */
+}
+
+/* table */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+th, td {
+    padding: 12px 15px;
+    /* text-align: left; */
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+    min-width: 100px;
+}
+th {
+    background-color: #024991;
+    color: white;
+}
+/* tr:nth-child(even) {
+    background-color: #f8f8f8;
+} */
+tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* header-section */
+.header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    position: relative;
+    padding: 20px;
+}
+.header-section h3 {
+    font-size: 22px;
+    color: #024991;
+    margin: 0;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+}
+
+/* button */
+.blue-button, .red-button {
+    font-family: '標楷體', Arial, sans-serif;
+    padding: 10px 15px;
+    margin: 0px 20px;
+    font-size: 20px;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    flex: 1 1 calc(25% - 30px); /* 調整以適應更大的間距 */
+    min-width: 120px;
+    max-width: 200px;
+    text-decoration: none;
+}
+@media (max-width: 769px) {
+    .blue-button, .red-button {
+        font-size: 16px;
+        min-width: 0px;
+    }
+}
+
+.small-blue-button, .small-red-button {
+    font-family: '標楷體', Arial, sans-serif;
+    padding: 5px 15px;
+    margin: 0px 0px;
+    font-size: 16px;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    /* min-width: 100px; */
+    max-width: 100px;
+    text-decoration: none;
+    text-align: center;
+}
+@media (max-width: 769px) {
+    .small-blue-button, .small-red-button {
+        font-size: 12px;
+        min-width: 0px;
+    }
+}
+
+.blue-button, .small-blue-button{
+    background-color: #007bff;
+}
+
+.blue-button:hover, .small-blue-button:hover {
+    background-color: #0056b3;
+}
+
+.red-button, .small-red-button {
+    background-color: #cc0000;
+}
+
+.red-button:hover, .small-red-button:hover {
+    background-color: #990000;
+}
+
+
+/* form-group */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: flex;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+.form-group input[type="text"],
+.form-group input[type="password"],
+.form-group input[type="email"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.button-group {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 20px;
+    gap: 5px;
+}
+
+/* form-table */
+.form-table {
+    /* <table class="form-table"></table> */
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0 15px;
+    margin-bottom: 10px;
+}
+.form-table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    height: 35px;
+}
+.form-table .form-label {
+    /* <td class='form-label'></td> */
+    text-align: center;
+    font-weight: bold;
+    background-color: #f9f9f9;
+    width: 100px;
+}
+.form-table input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+.form-table select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+/*  */
+.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #f5f5f5;
+    border-radius: 50px;
+    padding: 5px;
+    margin-top: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.notice {
+    color: red;
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 20px;
+}

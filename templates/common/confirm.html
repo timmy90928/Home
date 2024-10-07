@@ -1,0 +1,10 @@
+<script>
+    window.onload = function() {
+        if (confirm('{{message}}')) {
+            window.location.href = ' {{url}} ';
+            // window.location.replace('{{url}}');
+        }else{
+            window.history.back();
+        }
+    };
+</script>

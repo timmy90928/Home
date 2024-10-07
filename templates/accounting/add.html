@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<head>
+    <title>帳目</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='common.css') }}"> 
+</head>
+{% include 'common/header.html' %}
+<style>
+    label {
+        display: inline-flex;
+        align-items: center;
+    }
+</style>
+<body>
+    <div class="container">
+        {% if datas %}
+        <div class="header-section">
+            <h3>修改</h3>
+        </div>
+        <form action="/accounting/database/revise/{{ datas[0] }}" method="POST">
+        {% else %}
+        <div class="header-section">
+            <h3>新增</h3>
+        </div>
+        <form action="/accounting/database/add" method="POST">
+        {% endif %}
+            <table class="form-table">
+                <tr><!-- Date -->
+                    <td class="form-label">日期</td>
+                    <td><input type="date" id="Date" name="Date" required></td>
+                </tr><tr><!-- I/E -->
+                    <td class="form-label">收支</td>
+                    <td style="text-align: left;">
+                        <label for="e" style="margin-right: 10px;"><input type="radio" id="e" name="ie" value="支出"  style="width: auto;" />支出</label>
+                        <label for="i"><input type="radio" id="i" name="ie" value="收入" style="width: auto;"/>收入</label>
+                    </td>
+                </tr><tr><!-- Category -->
+                    <td class="form-label">類別</td>
+                    <td>
+                        <select  id="Category" name="Category" placeholder="請選擇類別" required>
+                            <option value="" disabled>請選擇類別</option>
+                        </select >
+                    </td><tr><!-- Detail -->
+                        <td class="form-label">細項</td>
+                        <td >
+                            <input id="Detail" name="Detail" type="text" list="Detail_list" placeholder="請選擇細項" required>
+                            <datalist id="Detail_list"></datalist>
+                        </td>
+                    </tr><tr><!-- Amount -->
+                        <td class="form-label">金額</td>
+                        <td><input type="number" id="Amount" name="Amount" min="0" placeholder="請輸入金額" required/></td>
+                    </tr><tr><!-- Note -->
+                        <td class="form-label">備註</td>
+                        <td><input type="text" id="note" name="note" placeholder="請輸入備註，可不輸入"/></td>
+                    </tr>
+                    
+                </tr>
+            </table>
+            <div class="button-group">
+                <div>
+                    {% if datas %}
+                        <input type='submit' value='修改' class="blue-button">
+                        <input type='reset'  value='重設' class="red-button">
+                        <input type='hidden' id="datas" name="datas" value='{{ datas }}'>
+                    {% else %}
+                        <input type='submit' value='新增' class="blue-button">
+                        <input type='reset'  value='重設' class="red-button">
+                    {% endif %}
+                </div>
+            </div>
+        </form>
+    </div>
+
+</body>
+{% include 'common/footer.html' %}
+
+<script src="{{ url_for('static', filename='utils.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => { 
+        const acc = new accounting(document);
+        acc.DynamicSelect();
+        
+    })
+</script>
+
+{% if datas %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => { 
+        const acc = new accounting(document);
+        acc.default(document.getElementById('datas').value);
+        
+    })
+</script>
+{% endif %}
+<!-- <script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+        // School
+        var selectschool = document.getElementById('school');
+        selectschool.value = "";
+        
+        // Department.
+        var selectdepartment = document.getElementById('department');
+        selectdepartment.value = "<?php echo $record['subject']; ?>";
+
+        if (defaultGender === 'male') {
+            if (maleRadio) {
+                maleRadio.checked = true;
+            }else if (defaultGender === 'female') {
+                if (femaleRadio) {
+                    femaleRadio.checked = true;
+                }
+            }
+        };
+    })
+        
+</script> -->

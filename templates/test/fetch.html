@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fetch Example</title>
+</head>
+<body>
+    <button id="sendRequest">發送請求</button>
+    <div id="message"></div>
+    <div id="data"></div>
+
+    <script>
+        document.getElementById('sendRequest').addEventListener('click', () => {
+            sendRequest("/test", { key: 'value' })
+            .then(data => {
+                document.getElementById('message').innerText = data.message;
+                document.getElementById('data').innerText = JSON.stringify(data);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+<script src="{{ url_for('static', filename='utils.js') }}"></script>
+</html>

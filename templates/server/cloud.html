@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<head>
+    <title>伺服器檔案管理(雲端)</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='common.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='upload.css') }}">
+</head>
+{% include 'common/header.html' %}
+<body>
+    
+    <div class="container">
+        <div class="header-section">
+            <h3 class="second-title">檔案上傳</h3>
+        </div>
+        <form method="POST" enctype="multipart/form-data" action="/server/cloud/upload">
+            <label for="file-upload" class="file-upload-label">選擇檔案</label>
+            <input id="file-upload" type="file" name="file">
+            <input type="submit" value="上傳">
+        </form>
+    </div>
+
+    <div class="container">
+        <div class="header-section">
+            <h3 class="second-title">已上傳檔案</h3>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>檔案名稱</th>
+                    <th>檔案大小</th>
+                    <th>上次存取時間</th>
+                    <th>上次修改時間</th>
+                    <th>建立時間</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for file in files %}
+                    <tr>
+                        <td>{{ file[0] }}</td>
+                        <td>{{ file[1] }}</td>
+                        <td>{{ file[2] }}</td>
+                        <td>{{ file[3] }}</td>
+                        <td>{{ file[4] }}</td>
+                        <td><a href="/server/cloud/download/{{file[0]}}" >下載</a></td>
+                        <td><a href="/confirm/確定要刪除這個檔案嗎?to=/server/cloud/delete/{{file[0]}}" >刪除</a></td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="7" style="text-align: center;">尚未上傳任何檔案。</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <script>
+        document.querySelectorAll('.delete-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                if (!confirm('確定要刪除這個檔案嗎？')) {
+                    e.preventDefault();
+                }
+            });
+        });
+
+        // 顯示選擇的檔案名稱
+        document.getElementById('file-upload').addEventListener('change', function(e) {
+            var fileName = e.target.files[0] ? e.target.files[0].name : '選擇檔案';
+            document.querySelector('.file-upload-label').textContent = fileName;
+        });
+    </script>
+</body>
+{% include 'common/footer.html' %}

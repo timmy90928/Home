@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<head>
+    <title>行程</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='common.css') }}"> 
+</head>
+{% include 'common/header.html' %}
+<style>
+    label {
+        display: inline-flex;
+        align-items: center;
+    }
+</style>
+<body>
+    <div class="container">
+        {% if datas %}
+        <div class="header-section">
+            <h3>修改</h3>
+        </div>
+        <form action="/travel/database/revise/{{ datas[0] }}" method="POST">
+        {% else %}
+        <div class="header-section">
+            <h3>新增</h3>
+        </div>
+        <form action="/travel/database/add" method="POST">
+        {% endif %}
+            <table class="form-table">
+                <tr><!-- name -->
+                    <td class="form-label">行程名稱</td>
+                    <td >
+                        <input id="name" name="name" type="text" list="name_list" placeholder="請填入行程名稱" required>
+                        <datalist id="name_list">
+                            {% for op in options['name'] %}
+                            <option value="{{ op[0] }}"></option>
+                            {% endfor %}
+                        </datalist>
+                    </td>
+                </tr><tr><!-- Date -->
+                    <td class="form-label">日期</td>
+                    <td><input type="date" id="date" name="date" required></td>
+                </tr><tr><!-- name -->
+                    <td class="form-label">類別</td>
+                    <td >
+                        <input id="class" name="class" type="text" list="class_list" placeholder="請填入行程類別" required>
+                        <datalist id="class_list">
+                            {% for op in options['class'] %}
+                            <option value="{{ op[0] }}"></option>
+                            {% endfor %}
+                        </datalist>
+                    </td>
+                </tr><tr><!-- place -->
+                    <td class="form-label">地點</td>
+                    <td >
+                        <input id="place" name="place" type="text" list="place_list" placeholder="請填入地點" required>
+                        <datalist id="place_list">
+                            {% for op in options['place'] %}
+                            <option value="{{ op[0] }}"></option>
+                            {% endfor %}
+                        </datalist>
+                    </td>
+                </tr><tr><!-- people -->
+                    <td class="form-label">人員</td>
+                    <td ><input id="people" name="people" type="text" placeholder="請填入人員，可不輸入"></td>
+                </tr><tr><!-- Note -->
+                    <td class="form-label">備註</td>
+                    <td><input type="text" id="note" name="note" placeholder="請填入備註，可不輸入"/></td>
+                </tr>
+                    
+            </table>
+            <div class="button-group">
+                <div>
+                    {% if datas %}
+                        <input type='submit' value='修改' class="blue-button">
+                        <input type='reset'  value='重設' class="red-button">
+                    {% else %}
+                        <input type='submit' value='新增' class="blue-button">
+                        <input type='reset'  value='重設' class="red-button">
+                    {% endif %}
+                    <a href="/travel" class="blue-button">回旅遊首頁</a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+</body>
+{% include 'common/footer.html' %}
+
+<script src="{{ url_for('static', filename='utils.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => { 
+        const acc = new accounting(document);
+        acc.DynamicSelect();
+        
+    })
+</script>
+
+{% if datas %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => { 
+        var name = document.getElementById('name');
+        var datestamp = document.getElementById('date');
+        var _class = document.getElementById('class');
+        var place = document.getElementById('place');
+        var people = document.getElementById('people');
+        var note = document.getElementById('note');
+        
+        name.value = "{{ datas[1] }}";
+        datestamp.value = "{{ datas[2] }}";
+        _class.value = "{{ datas[3] }}";
+        place.value = "{{ datas[4] }}";
+        people.value = "{{ datas[5] }}";
+        note.value = "{{ datas[6] }}";
+        
+    })
+</script>
+{% endif %}

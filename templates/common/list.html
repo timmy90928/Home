@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<head>
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='common.css') }}">
+</head>
+{% include 'common/header.html' %}
+<body>
+    
+    <div class="container">
+        <div class="header-section">
+            <h3>{{ title }}</h3>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    {% for head in heads %}
+                        <th>{{ head }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for data_list in datas %}
+                    <tr>
+                        {% for data in data_list %}
+                            <td>{{ data|safe }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+{% include 'common/footer.html' %}

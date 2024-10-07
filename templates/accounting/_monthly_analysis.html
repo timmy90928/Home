@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<head>
+    <title>月分析</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='common.css') }}">
+</head>
+{% include 'common/header.html' %}
+<body>
+    <form action="/accounting/analysis/month" method="POST">
+        <table class="form-table">
+            <tr><!-- Date -->
+                <td class="form-label">月份</td>
+                <td><input type="month" id="Date" name="Date" required></td>
+                <td style="width: 50px;"><input style="margin-right: 10px; width: 50px;" type='submit' value='分析' class="blue-button"></td>
+            </tr>
+        </table>
+    </form>
+    <div class="container">
+        <!-- 總收支 -->
+        <div class="header-section">
+            <h3>總收支</h3>
+        </div>
+        <table >
+            <thead>
+                <tr>
+                    <th>收入</th>
+                    <th>支出</th>
+                    <th>總收支</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    {% for data in t_datas %}
+                        <td >{{ data|safe }}</td>
+                    {% endfor %}
+                </tr>
+            </tbody>
+        </table>
+        <!-- 支出 -->
+        <div class="header-section">
+            <h3>支出</h3>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    {% for head in e_heads %}
+                        <th>{{ head }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    {% for data in e_datas %}
+                        <td>{{ data|safe }}</td>
+                    {% endfor %}
+                    
+                </tr>
+            </tbody>
+        </table>
+        <!-- 收入 -->
+        <div class="header-section">
+            <h3>收入</h3>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    {% for head in i_heads %}
+                        <th>{{ head }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    {% for data in i_datas %}
+                        <td>{{ data|safe }}</td>
+                    {% endfor %}
+                </tr>
+            </tbody>
+        </table>
+        <!-- 詳細資料 -->
+        <div class="header-section">
+            <h3>詳細資料</h3>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    {% for head in heads %}
+                        <th>{{ head }}</th>
+                    {% endfor %}
+                    <th>編輯</th>
+                    <th>刪除</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for data_list in datas %}
+                    <tr>
+                        {% for data in data_list %}
+                            <td>{{ data|safe }}</td>
+                        {% endfor %}
+                        <td><a href="/accounting/edit/data/{{data_list[0]}}" class="small-blue-button">編輯</a></td>
+                        <td><a href="/accounting/database/delete/{{data_list[0]}}" class="small-red-button" name="{{data_list[0]}}">刪除</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+{% include 'common/footer.html' %}
+
+<script src="{{ url_for('static', filename='utils.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => { 
+        date = document.getElementById('Date');
+        date.value = "{{ month }}";
+        confirm_delete('.small-red-button');
+    })
+    
+</script>
