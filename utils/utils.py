@@ -11,6 +11,7 @@ from threading import Thread
 import os
 from routes import request
 from utils.web import get_external_ip, get_local_ip
+import webbrowser
 
 def hash(text:str) -> str:
     return sha3_256(text.encode()).hexdigest()
@@ -80,8 +81,9 @@ class SysTray(_icon):
     
     def create_menu(self):
         return StrayMenu(
-            MenuItem("結束", self.on_quit),
+            MenuItem("管理伺服器", self.open_sever_info),
             MenuItem("顯示IP", self.show_ip),
+            MenuItem("結束", self.on_quit),
             )
 
     def on_quit(self, icon, item):
@@ -91,7 +93,11 @@ class SysTray(_icon):
     
     def show_ip(self, icon, item):
         self.notify(f"內網IP:{get_local_ip()}\n外網IP:{get_external_ip()}","IP通知")
-        
+    
+    def open_sever_info(self, icon, item):
+        webbrowser.open('http://localhost:928/server/info')
+
+
 def msgw(title:str="Title", text:str="contant", style:int=0, time:int=0) -> int:
     """
     ctypes.windll.user32.MessageBoxTimeoutW()

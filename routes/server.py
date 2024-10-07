@@ -12,7 +12,7 @@ def index():
     return redirect('/server/info')
 
 @server_bp.route('/info', methods=['GET'])
-@login_required
+# @login_required
 def info():
     try: 
         latest_version, latest_download_url, updated = get_latest_release(app.config['TITLE'])

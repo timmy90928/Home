@@ -24,14 +24,17 @@ nbformat==5.10.4
 packaging==24.1
 pefile==2024.8.26
 pigar==2.1.6
+pillow==10.4.0
 platformdirs==4.3.6
 pyinstaller==6.10.0
 pyinstaller-hooks-contrib==2024.8
+pystray==0.19.5
 pywin32==306
 pywin32-ctypes==0.2.3
 referencing==0.35.1
 requests==2.32.3
 rpds-py==0.20.0
+six==1.16.0
 traitlets==5.14.3
 urllib3==2.2.3
 Werkzeug==3.0.4
