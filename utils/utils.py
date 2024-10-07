@@ -67,13 +67,15 @@ class json:
             dump(data, f, ensure_ascii=False, indent=4)
         return True
 
-
+from time import sleep
 class SysTray(_icon):
     def __init__(self, name):
         super().__init__(name=name, title=name, icon=self.create_image(), menu=self.create_menu())
 
     def start(self):
         Thread(target=self.run, daemon=False).start()
+        sleep(0.05)
+        self.notify("伺服器已啟動","啟動通知")
 
     def create_image(self):
         image = Image.open("static/picture/house.ico")
