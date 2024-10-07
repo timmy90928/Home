@@ -32,7 +32,7 @@ app.config['TITLE'] = 'Home'
 app.config['DESCRIPTION'] = 'Home management system'
 app.config['UPLOAD_FOLDER'] = path.join(getcwd(), 'writable') # Define the address of the upload folder.
 app.config['SERVER_RUN_TIME'] = now_time()
-app.config['VERSION'] = '1.0.0-beta.1'  # __version__ = ".".join(("0", "6", "3"))
+app.config['VERSION'] = '1.0.0-beta.2'  # __version__ = ".".join(("0", "6", "3"))
 app.config['AUTHOR'] = 'Wei-Wen Wu'
 app.config['AUTHOR_EMAIL'] = 'timmy90928@gmail.com'
 app.config['GITHUB_URL'] = 'https://github.com/timmy90928/Home'
