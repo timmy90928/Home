@@ -2,12 +2,20 @@
 <head>
     <title>行程</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='common.css') }}"> 
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    </style>
 </head>
 {% include 'common/header.html' %}
 <style>
     label {
         display: inline-flex;
         align-items: center;
+    }
+
+    #mapholder {
+        width: 800px;
+        height: 600px;
+        margin-top: 20px;
     }
 </style>
 <body>
@@ -59,13 +67,28 @@
                     </td>
                 </tr><tr><!-- people -->
                     <td class="form-label">人員</td>
-                    <td ><input id="people" name="people" type="text" placeholder="請填入人員，可不輸入"></td>
+                    <td >
+                        <input id="people" name="people" type="text" list="people_list" placeholder="請填入人員" required>
+                        <datalist id="people_list">
+                            {% for op in options['people'] %}
+                            <option value="{{ op[0] }}"></option>
+                            {% endfor %}
+                        </datalist>
+                    </td>
                 </tr><tr><!-- Note -->
                     <td class="form-label">備註</td>
                     <td><input type="text" id="note" name="note" placeholder="請填入備註，可不輸入"/></td>
+                </tr><tr><!-- Note -->
+                    <td class="form-label">定位</td>
+                    <td>
+                        <!-- <button onclick="getLocation()">定位</button> -->
+                        <input type="text" id="gps" name="gps" placeholder="座標(緯度,經度)"/>
+                        {% if not datas %}<div id="mapholder"></div>{% endif %}
+                    </td>
                 </tr>
                     
             </table>
+            
             <div class="button-group">
                 <div>
                     {% if datas %}
@@ -84,24 +107,17 @@
 </body>
 {% include 'common/footer.html' %}
 
-<script src="{{ url_for('static', filename='utils.js') }}"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', () => { 
-        const acc = new accounting(document);
-        acc.DynamicSelect();
-        
-    })
-</script>
-
 {% if datas %}
 <script>
     document.addEventListener('DOMContentLoaded', () => { 
+        console.log("{{ position }}")
         var name = document.getElementById('name');
         var datestamp = document.getElementById('date');
         var _class = document.getElementById('class');
         var place = document.getElementById('place');
         var people = document.getElementById('people');
         var note = document.getElementById('note');
+        var position = document.getElementById('gps');
         
         name.value = "{{ datas[1] }}";
         datestamp.value = "{{ datas[2] }}";
@@ -109,7 +125,79 @@
         place.value = "{{ datas[4] }}";
         people.value = "{{ datas[5] }}";
         note.value = "{{ datas[6] }}";
+
+        position.value = "{{position}}";
         
     })
 </script>
+{% else %}
+<script src="{{ url_for('static', filename='utils.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => { 
+        getLocation();
+    })
+</script>
 {% endif %}
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script>
+    // https://github.com/timmy90928/Home/issues/9
+    var x = document.getElementById('gps');
+    var options = {
+        enableHighAccuracy: true, // Enable high accuracy.
+        timeout: 5000, 	// 5 seconds timeout.
+        maximumAge: 0 	// Do not use caching.
+    };
+
+    function getLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(showPosition, showError,options);
+        } else {
+            x.value = "此瀏覽器不支援獲取當前座標";
+        }
+    }
+
+    function showPosition(position) {
+        var lat = position.coords.latitude; 	// 緯度
+        var lon = position.coords.longitude; 	// 經度
+        try {var map = L.map('mapholder').setView([lat,lon], 15);} // Initialize map.
+        catch (error) {}//x.innerHTML = "定位誤差過大，請重新整理!";
+            
+        // Add OpenStreetMap layer.
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+        }).addTo(map);
+            
+        if (position.coords.accuracy < 100){
+        var accuracy = "精確度(誤差): " + position.coords.accuracy + " 公尺"
+        if (position.coords.altitude !== null) {
+            var altitude = "海拔高度: " + position.coords.altitude + " 公尺";
+        } else {
+            var altitude = "海拔高度: 該設備無法獲取";
+        }
+        L.marker([lat,lon]).addTo(map).bindPopup("當前位置：<br>" + accuracy + "<br>"+ altitude).openPopup();
+        }else{
+        // Add tag.
+        L.marker([lat,lon]).addTo(map).bindPopup("定位誤差過大!").openPopup();
+        }
+            
+        x.value = `${lat},${lon}`;
+        }
+
+    function showError(error) {
+        switch (error.code) {
+            case error.PERMISSION_DENIED:
+                x.innerHTML = "用戶拒絕獲取";
+                break;
+            case error.POSITION_UNAVAILABLE:
+                x.innerHTML = "位置訊息不可用";
+                break;
+            case error.TIMEOUT:
+                x.innerHTML = "超時";
+                break;
+            case error.UNKNOWN_ERROR:
+                x.innerHTML = "未知錯誤";
+                break;
+        }
+    }
+</script>

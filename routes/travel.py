@@ -17,8 +17,8 @@ def add():
 def editdata(id):
     if current_user.rolenum > 2:  return redirect('/error/role/2')
     datas = db.get_row('travel', ['id', id],HEADS_SQL)[0]
-    print(datas)
-    return render_template('travel/add.html',datas=datas,options=options_default())
+    position = db.get_row('travel', ['id', id],'position')[0]
+    return render_template('travel/add.html',datas=datas,options=options_default(),position=position[0])
 
 @travel_bp.route('search', methods=['GET','POST'])
 def search():
@@ -37,17 +37,27 @@ def search():
 
     return render_template('travel/search.html',options=options_default())
 
-
+@travel_bp.route('/map', methods=['GET'])
+def travel_map():
+    pp = ''
+    for n, (place,date,pos) in enumerate(db.get_col('travel', "place,strftime('%Y-%m-%d', datestamp, 'unixepoch','localtime'),position")):
+        if not pos: continue
+        if n == 0:
+            pp += f"{place},{date},{pos}"
+        else:
+            pp += f";{place},{date},{pos}"
+    return render_template('travel/travel_map.html',position=pp)
 @travel_bp.route('database/add', methods=['POST'])
 def data_add():
     form = request.form
     data = {
         'name': form.get('name'),
-        'datestamp': timestamp(string=form.get('Date')),
+        'datestamp': timestamp(string=form.get('date')),
         'class': form.get('class'),
         'place': form.get('place'),
         'people': form.get('people'),
         'note': form.get('note'),
+        'position': form.get('gps'),
     }
     # print(db.get_row('travel', ['name',data['name']]))
     db.add('travel', data)
@@ -58,11 +68,12 @@ def data_revise(id):
     form = request.form
     data = {
         'name': form.get('name'),
-        'datestamp': timestamp(string=form.get('Date')),
+        'datestamp': timestamp(string=form.get('date')),
         'class': form.get('class'),
         'place': form.get('place'),
         'people': form.get('people'),
         'note': form.get('note'),
+        'position': form.get('gps'),
     }
     db.revise('travel', data, ['id', id])
     return redirect(f'/alert/於{now_time()}修改成功?to=/travel')
@@ -74,7 +85,8 @@ def data_delete(id):
 
 def options_default():
     options = {}
-    options['name'] = db.get_col('travel', 'name',distinct=True ,customize = ' ORDER BY name DESC')
-    options['place'] = db.get_col('travel', 'place',distinct=True ,customize = ' ORDER BY name DESC')
+    options['name'] = db.get_col('travel', 'name',distinct=True ,customize = ' ORDER BY datestamp DESC')
+    options['place'] = db.get_col('travel', 'place',distinct=True ,customize = ' ORDER BY datestamp DESC')
     options['class'] = [('百岳',),('小百岳',),('郊山或健行',),('休閒',),('海外',)]
+    options['people'] = db.get_col('travel', 'people',distinct=True ,customize = ' ORDER BY datestamp DESC')
     return options
