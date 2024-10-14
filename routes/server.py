@@ -1,5 +1,5 @@
 from . import (app, Blueprint, render_template, request, redirect, clients, send_from_directory, url_for, 
-               datetime, now_time, listdir, path, stat, remove)
+               timestamp, now_time, listdir, path, stat, remove)
 from . import login_user, logout_user, login_required, current_user
 from platform import system,node
 from utils.web import get_latest_release, check_file
@@ -34,7 +34,7 @@ def info():
 def cloud():
     data = []
     files = listdir(app.config['UPLOAD_FOLDER'])
-    def time_convert(timestamp ):return datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S')
+    def time_convert(ts ):return timestamp(ts=ts)
     for file in files:
         file_info = stat(path.join(app.config['UPLOAD_FOLDER'], file))
         data.append([file,convert_size(file_info.st_size),time_convert(file_info.st_atime),time_convert(file_info.st_mtime),time_convert(file_info.st_ctime)]) # 檔案名稱、檔案大小、上次存取時間、上次修改時間、建立時間

@@ -8,5 +8,5 @@ for bp in ALL_BP:
     app.register_blueprint(bp)
 
 if __name__ == "__main__":
-    systray.start()
+    if CONFIG('server/DEBUG') == False: systray.start()
     app.run(host="0.0.0.0",port="928",debug=CONFIG('server/DEBUG'))

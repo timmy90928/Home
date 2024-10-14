@@ -2,7 +2,7 @@ from flask import Flask, Blueprint, render_template, request, url_for,redirect,m
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user as _current_user # https://ithelp.ithome.com.tw/articles/10328420
 from os import listdir, path, stat, remove ,getcwd
 from utils.db import database
-from utils.utils import SysTray, json, now_time, datetime
+from utils.utils import SysTray, json, now_time, timestamp
 # from utils.web import User
 from time import time
 
@@ -32,7 +32,7 @@ app.config['TITLE'] = 'Home'
 app.config['DESCRIPTION'] = 'Home management system'
 app.config['UPLOAD_FOLDER'] = path.join(getcwd(), 'writable') # Define the address of the upload folder.
 app.config['SERVER_RUN_TIME'] = now_time()
-app.config['VERSION'] = '1.0.0-beta.2'  # __version__ = ".".join(("0", "6", "3"))
+app.config['VERSION'] = '1.0.0-beta.3'  # __version__ = ".".join(("0", "6", "3"))
 app.config['AUTHOR'] = 'Wei-Wen Wu'
 app.config['AUTHOR_EMAIL'] = 'timmy90928@gmail.com'
 app.config['GITHUB_URL'] = 'https://github.com/timmy90928/Home'

@@ -1,4 +1,4 @@
-from . import Blueprint, render_template, request, db, redirect, datetime, now_time
+from . import Blueprint, render_template, request, db, redirect, timestamp, now_time
 
 travel_bp = Blueprint('travel', __name__, url_prefix='/travel')
 HEADS = ['流水號','行程名稱','日期','類別','地點','人員','備註']
@@ -22,8 +22,6 @@ def editdata(id):
 def search():
     if request.method == 'POST':
         form = request.form
-        startDate = form.get('startDate') if form.get('startDate') else '%'
-        endDate =   form.get('endDate') if form.get('startDate') else '%'
         data = {
             'name': form.get('name') if form.get('name') else '%',
             'class': form.get('class') if form.get('class') else '%',
@@ -31,7 +29,7 @@ def search():
             'people': form.get('people') if form.get('people') else '%',
             'note': form.get('note') if form.get('note') else '%',
         }
-        date = f"AND datestamp BETWEEN strftime('%s', '{startDate}') AND strftime('%s', '{endDate}')" if form.get('startDate') and form.get('endDate') else ''
+        date = f"AND datestamp BETWEEN {timestamp(string=form.get('startDate'))} AND {timestamp(string=form.get('endDate'))}" if form.get('startDate') and form.get('endDate') else ''
         datas = db.get_col('travel', HEADS_SQL, data, customize=f'{date} ORDER BY datestamp DESC')
         return render_template('travel/search.html',options=options_default(), datas=datas, heads=HEADS)
 
@@ -43,7 +41,7 @@ def data_add():
     form = request.form
     data = {
         'name': form.get('name'),
-        'datestamp': datetime.strptime(form.get('date'), "%Y-%m-%d").timestamp(),
+        'datestamp': timestamp(string=form.get('Date')),
         'class': form.get('class'),
         'place': form.get('place'),
         'people': form.get('people'),
@@ -58,7 +56,7 @@ def data_revise(id):
     form = request.form
     data = {
         'name': form.get('name'),
-        'datestamp': datetime.strptime(form.get('date'), "%Y-%m-%d").timestamp(),
+        'datestamp': timestamp(string=form.get('Date')),
         'class': form.get('class'),
         'place': form.get('place'),
         'people': form.get('people'),

@@ -9,7 +9,6 @@ from pystray import MenuItem, Icon as _icon, Menu as StrayMenu
 from PIL import Image
 from threading import Thread
 import os
-from routes import request
 from utils.web import get_external_ip, get_local_ip
 import webbrowser
 
@@ -129,6 +128,29 @@ def msgw(title:str="Title", text:str="contant", style:int=0, time:int=0) -> int:
 
 def now_time() -> str:
     return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+def timestamp(year=1999, month=1, day=1, hour=0, minute=0, second=0, dday=0, dhour=0, dminute=0, dsecond=0, ts:Union[int,float] = None, string:str = None) -> float:
+    """
+    ```
+    a = timestamp(2024,10+1,dsecond=-1)
+    print(a)
+    ```
+    """
+    if ts:
+        return datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
+    elif string:
+        arr_string = string.split(" ")
+        if len(arr_string) == 1:
+            arr = arr_string[0].split("-")
+            return timestamp(year=int(arr[0]), month=int(arr[1]), day=int(arr[2]))
+        else:
+            arr0 = arr_string[0].split("-")
+            arr1 = arr_string[1].split(":")
+            return timestamp(year=int(arr0[0]), month=int(arr0[1]), day=int(arr0[2]),hour=int(arr1[0]), minute=int(arr1[1]), second=int(arr1[2]))
+    else:
+        dt = timedelta(days=dday, hours=dhour, minutes=dminute, seconds=dsecond)
+        t = datetime.strptime(f'{year:04}-{month:02}-{day:02} {hour:02}:{minute:02}:{second:02}', "%Y-%m-%d %H:%M:%S") + dt
+        return t.timestamp()
 
 def copy_file(dst: str, src: str = './writable/home.db') -> None:
     """

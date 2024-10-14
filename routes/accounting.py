@@ -1,4 +1,4 @@
-from . import Blueprint, render_template, request, redirect, login_required, current_user, db, jsonify, CONFIG, now_time, datetime
+from . import Blueprint, render_template, request, redirect, login_required, current_user, db, jsonify, CONFIG, now_time, timestamp
 from utils.db import IE_TOTAL_SQL
 
 accounting_bp = Blueprint('accounting', __name__, url_prefix='/accounting')
@@ -18,11 +18,12 @@ def add():
 
 @accounting_bp.route('/<year>/<month>', methods=['GET'])
 def monthly_analysis(year, month):
+    # https://github.com/timmy90928/Home/issues/2
     e  = analysis(year, month, '支出')
     i  = analysis(year, month, '收入')
     e_values = list(e.values())
     i_values = list(i.values())
-    datas = db(f"SELECT {HEADS_SQL} FROM Accounting WHERE Datestamp BETWEEN strftime('%s', '{year}-{month}-01') AND strftime('%s', '{year}-{month}-01','+1 month', '-1 day')")
+    datas = db(f"SELECT {HEADS_SQL} FROM Accounting WHERE Datestamp BETWEEN {timestamp(year,month)} AND {timestamp(year,int(month)+1,dsecond=-1)}")
     
     return render_template('accounting/search.html',title='月分析',month = f'{year}-{month}',t_datas = [i_values[-1],e_values[-1],int(i_values[-1])-int(e_values[-1])],
                            datas = datas, heads = HEADS,
@@ -98,7 +99,7 @@ def getCategories():
 def data_add():
     form = request.form
     data = {
-        'Datestamp': datetime.strptime(form.get('Date'), "%Y-%m-%d").timestamp(),
+        'Datestamp': timestamp(string=form.get('Date')),
         'ie': form.get('ie'),
         'Category': form.get('Category'),
         'Detail':  form.get('Detail'),
@@ -113,7 +114,7 @@ def data_add():
 def data_revise(id):
     form = request.form
     data = {
-        'Datestamp': datetime.strptime(form.get('Date'), "%Y-%m-%d").timestamp(),
+        'Datestamp': timestamp(string=form.get('Date')),
         'ie': form.get('ie'),
         'Category': form.get('Category'),
         'Detail':  form.get('Detail'),
@@ -139,7 +140,7 @@ def analysis(year, month, ie='支出'):
             Category,
             SUM(Amount) AS TotalAmount
         FROM        Accounting
-        WHERE       ie = '{ie}' AND Datestamp BETWEEN strftime('%s', '{year}-{month}-01') AND strftime('%s', '{year}-{month}-01','+1 month', '-1 day')
+        WHERE       ie = '{ie}' AND Datestamp BETWEEN {timestamp(year,month)} AND {timestamp(year,int(month)+1,dsecond=-1)}
         GROUP BY    Category
 
         UNION ALL
@@ -148,7 +149,7 @@ def analysis(year, month, ie='支出'):
             '總額' AS Category,
             SUM(Amount) AS TotalAmount
         FROM        Accounting
-        WHERE       ie = '{ie}' AND Datestamp BETWEEN strftime('%s', '{year}-{month}-01') AND strftime('%s', '{year}-{month}-01','+1 month', '-1 day');
+        WHERE       ie = '{ie}' AND Datestamp BETWEEN {timestamp(year,month)} AND {timestamp(year,int(month)+1,dsecond=-1)};
         """)
     j:dict = CONFIG(f'ie_class/{ie}').copy()
     for i in data:
