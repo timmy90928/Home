@@ -93,6 +93,7 @@ class roles(IntEnum):
     developer = 0
     admin = 1
     user = 2
+    viewer = 3
     error = 9
 
 """"

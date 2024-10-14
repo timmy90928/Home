@@ -42,13 +42,13 @@
         confirm_delete('.small-red-button');
     })
     function input_username() {
-        var username = prompt('請輸入帳號名稱')
+        var username = prompt('請輸入帳號名稱與權限[2,3](用空格分開):', 'admin 0');
         if (username == null || "") {
-            // 已取消輸入
+            console.log('已取消輸入');
         } else {
             sendRequest('/account/database/add', {'username':username})
             .then(data => {
-                console.log('Data:', data);
+                alert(data.data);
                 location.reload();
             })
             .catch(error => {

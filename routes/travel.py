@@ -1,4 +1,4 @@
-from . import Blueprint, render_template, request, db, redirect, timestamp, now_time
+from . import Blueprint, render_template, request, db, redirect, timestamp, now_time, current_user
 
 travel_bp = Blueprint('travel', __name__, url_prefix='/travel')
 HEADS = ['流水號','行程名稱','日期','類別','地點','人員','備註']
@@ -10,10 +10,12 @@ def index():
 
 @travel_bp.route('/add', methods=['GET'])
 def add():
+    if current_user.rolenum > 2:  return redirect('/error/role/2')
     return render_template('travel/add.html',options=options_default())
 
 @travel_bp.route('/edit/<id>', methods=['GET'])
 def editdata(id):
+    if current_user.rolenum > 2:  return redirect('/error/role/2')
     datas = db.get_row('travel', ['id', id],HEADS_SQL)[0]
     print(datas)
     return render_template('travel/add.html',datas=datas,options=options_default())
@@ -66,6 +68,7 @@ def data_revise(id):
     return redirect(f'/alert/於{now_time()}修改成功?to=/travel')
 @travel_bp.route('database/delete/<id>', methods=['GET'])
 def data_delete(id):
+    if current_user.rolenum > 2:  return redirect('/error/role/2')
     db.delete('travel', ['id', id])
     return redirect(request.referrer)
 

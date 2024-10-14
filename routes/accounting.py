@@ -8,12 +8,12 @@ HEADS_SQL = "id,strftime('%Y-%m-%d', Datestamp, 'unixepoch','localtime'),ie,Cate
 @accounting_bp.route('/database', methods=['GET'])
 # @login_required
 def show_database():
-    # if current_user.role != 'developer': return "此頁面僅提供給開發者使用", 403
-
     return redirect('/show/Accounting')
 
 @accounting_bp.route('/add', methods=['GET'])
+@login_required
 def add():
+    if current_user.rolenum > 2:  return redirect('/error/role/2')
     return render_template('accounting/add.html')
 
 @accounting_bp.route('/<year>/<month>', methods=['GET'])
@@ -75,6 +75,7 @@ def search():
 
 @accounting_bp.route('/edit/class', methods=['GET'])
 def editclass():
+    if current_user.rolenum > 2:  return redirect('/error/role/2')
     ie_i = CONFIG('ie_class/收入')
     ie_e = CONFIG('ie_class/支出')
     # list(CONFIG('ie_class/收入').keys())
@@ -83,8 +84,8 @@ def editclass():
 
 @accounting_bp.route('/edit/data/<id>', methods=['GET'])
 def editdata(id):
+    if current_user.rolenum > 2:  return redirect('/error/role/2')
     datas = db.get_row('Accounting', ['id', id],HEADS_SQL)[0] # note
-
     return render_template('accounting/add.html',datas=datas)
 
 @accounting_bp.route('/getCategories', methods=['POST'])
@@ -126,6 +127,7 @@ def data_revise(id):
     return redirect(f'/alert/於{now_time()}修改成功')
 @accounting_bp.route('/database/delete/<id>', methods=['GET'])
 def delete(id):
+    if current_user.rolenum > 2:  return redirect('/error/role/2')
     db.delete('Accounting', ['id', id])
     return redirect(request.referrer)
 

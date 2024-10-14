@@ -10,7 +10,7 @@ HEADS_SQL = "id,username,name,role"
 @account_bp.route('/')
 @login_required
 def index():
-    if current_user.rolenum > 0:  return render_template('common/list.html', title = "權限錯誤", heads = ['此頁面僅提供給管理員使用'])
+    if current_user.rolenum > 1:  return redirect('/error/role/1')
     return render_template('account/manager.html', datas = db.get_col('account', HEADS_SQL), heads = HEADS)
 
 @account_bp.route('/edit/<id>', methods=['GET', 'POST'])
@@ -30,12 +30,14 @@ def edit(id):
 
 @account_bp.route('/database/add', methods=['POST'])
 def add():
-    username = request.json['username']
-    print(username)
-    db.add('account', {'username':username, 'name':username, 'password':hash(username)})
-    return jsonify({'data': username}) # redirect('/account')
+    username,role = request.json['username'].split(' ')
+    from . import roles
+    if int(role) < 3: return jsonify({'data': '不能賦予管理員權限'})
+    db.add('account', {'username':username, 'name':username, 'password':hash(username),'role':roles(int(role)).name})
+    return jsonify({'data': f"{username}({roles(int(role)).name})新增成功"}) # redirect('/account')
 @account_bp.route('/database/delete/<id>', methods=['GET'])
 def delete(id):
+    if current_user.rolenum > 1:  return redirect('/error/role/1')
     if db.get_row('account', ['id', id],'role')[0][0] in ('admin', 'developer'):  return redirect('/alert/此帳號無法刪除')
     db.delete('account', ['id', id])
     return redirect('/account')

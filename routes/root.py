@@ -1,4 +1,4 @@
-from . import Blueprint, render_template, request, db, jsonify,listdir, app, send_from_directory
+from . import Blueprint, render_template, request, db, jsonify,listdir, app, send_from_directory, redirect
 from . import login_user, logout_user, login_required, current_user
 
 root_bp = Blueprint('root', __name__)
@@ -20,8 +20,19 @@ def send_image(filename):
 @root_bp.route("/show/<table_name>", methods=['GET'])
 @login_required
 def show(table_name):
-    if current_user.rolenum > 0:  return render_template('common/list.html', title = "權限錯誤", heads = ['此頁面僅提供給開發者使用'])
+    if current_user.rolenum > 0:  return redirect('/error/role/0')
     return render_template('common/list.html',title=table_name,datas=db.get_col(table_name,'*'),heads=db.get_head(table_name))
+
+@root_bp.route('/error/role/<message>', methods=['GET'])
+def role_error(message: str):
+    """```
+    if current_user.rolenum > 0:  return redirect('/error/role/0')
+    ```"""
+    match message:
+        case '0': message = '此頁面僅提供給開發者使用'
+        case '1': message = '此頁面僅提供給管理員使用'
+        case '2': message = '此頁面僅提供給一般使用者與管理員使用'
+    return render_template('common/list.html', title = "權限錯誤", heads = [message])
 
 @root_bp.route('/alert/<message>', methods=['GET'])
 def alert(message: str) -> None:

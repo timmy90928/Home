@@ -12,7 +12,6 @@ def index():
     return redirect('/server/info')
 
 @server_bp.route('/info', methods=['GET'])
-# @login_required
 def info():
     try: 
         latest_version, latest_download_url, updated = get_latest_release(app.config['TITLE'])
@@ -32,6 +31,7 @@ def info():
 @server_bp.route('/cloud', methods=['GET'])
 @login_required
 def cloud():
+    if current_user.rolenum > 2:  return redirect('/error/role/2')
     data = []
     files = listdir(app.config['UPLOAD_FOLDER'])
     def time_convert(ts ):return timestamp(ts=ts)
@@ -63,6 +63,7 @@ def download(filename: str):
 @server_bp.route("/cloud/delete/<filename>")
 def delete(filename: str):
     """Handles a delete request by removing the specified file from the upload folder."""
+    if current_user.rolenum > 2:  return redirect('/error/role/2')
     file_path = path.join(app.config["UPLOAD_FOLDER"], filename)
     if filename in ('home.db', 'config.json'):
         return redirect('/alert/無法刪除預設檔案')
