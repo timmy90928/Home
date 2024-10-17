@@ -9,10 +9,16 @@ from pystray import MenuItem, Icon as _icon, Menu as StrayMenu
 from PIL import Image
 from threading import Thread
 import os
-from utils.web import get_external_ip, get_local_ip
 import webbrowser
 
 def hash(text:str) -> str:
+    """
+    Hash the text using SHA3-256.
+
+    ## Example
+    >>> hash('home')
+    'a20243f409be1afca9a63f66224b3467eaa9194753561e33b4d1202294cabd21'
+    """
     return sha3_256(text.encode()).hexdigest()
 
 class json:
@@ -68,6 +74,11 @@ class json:
 
 from time import sleep
 class SysTray(_icon):
+    """
+    >>> tray = SysTray('Title')
+    >>> tray.title
+    'Title'
+    """
     def __init__(self, name):
         super().__init__(name=name, title=name, icon=self.create_image(), menu=self.create_menu())
 
@@ -93,7 +104,9 @@ class SysTray(_icon):
         os._exit(0)
     
     def show_ip(self, icon, item):
+        from utils.web import get_external_ip, get_local_ip
         self.notify(f"內網IP:{get_local_ip()}\n外網IP:{get_external_ip()}","IP通知")
+        return True
     
     def open_sever_info(self, icon, item):
         webbrowser.open('http://localhost:928/server/info')
@@ -117,24 +130,29 @@ def msgw(title:str="Title", text:str="contant", style:int=0, time:int=0) -> int:
 
     Example
     -------
-    ```
-    msg=msgw('title','contant',0,1000)  # time (ms)
-    print(msg)
-    ```
+    >>> msg=msgw('title','contant',0,1)  # time (ms)
     """
     import ctypes
     # MessageBoxTimeoutW(父窗口句柄,消息內容,標題,按鈕,語言ID,等待時間)
     return ctypes.windll.user32.MessageBoxTimeoutW(0, text, title, style,0,time)
 
 def now_time() -> str:
+    """
+    ## Example
+    >>> now_time() # doctest: +SKIP
+    '2022-08-31 23:59:59'
+    """
     return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
 def timestamp(year=1999, month=1, day=1, hour=0, minute=0, second=0, dday=0, dhour=0, dminute=0, dsecond=0, ts:Union[int,float] = None, string:str = None) -> float:
     """
-    ```
-    a = timestamp(2024,10+1,dsecond=-1)
-    print(a)
-    ```
+    ## Example
+    >>> timestamp(2024,10+1,dsecond=-1)
+    1730390399.0
+    >>> timestamp(string='2024-10-31 23:59:59')
+    1730390399.0
+    >>> timestamp(ts=1730390399.0)
+    '2024-10-31 23:59:59'
     """
     if ts:
         return datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
@@ -159,6 +177,11 @@ def copy_file(dst: str, src: str = './writable/home.db') -> None:
     :param src: The source file path. Must be a Path object.
     :param dst: The destination file path. Must be a Path object.
     :return: None
+
+    >>> copy_file()
+    Traceback (most recent call last):
+    ...
+    TypeError: copy_file() missing 1 required positional argument: 'dst'
     """
     if not src or not dst:
         raise ValueError("Both src and dst must be non-empty")
@@ -172,18 +195,18 @@ class base64:
     Base64 encoding and decoding.
 
     ## Example
-
-    ```
-    value_str = 'abcde'
-    value_list = ['ac','cd']
-    b64_str = base64(value_str).encode()
-    b64_list = base64(value_list).encode()
-
-    print(b64_str)      # YWJjZGU=
-    print(b64_list)     # YWMsY2Q=
-    print(base64(b64_str).decode())     # abcde
-    print(base64(b64_list).decode())    # ['ac', 'cd']
-    ```
+    >>> value_str = 'abcde'
+    >>> value_list = ['ac','cd']
+    >>> b64_str = base64(value_str).encode()
+    >>> b64_list = base64(value_list).encode()
+    >>> b64_str
+    'YWJjZGU='
+    >>> b64_list
+    'YWMsY2Q='
+    >>> base64(b64_str).decode()
+    'abcde'
+    >>> base64(b64_list).decode()
+    ['ac', 'cd']
     """
     # __slots__ = ("data",)
 
@@ -203,10 +226,18 @@ class base64:
         return decoded_string.split(",") if "," in decoded_string else decoded_string
         
 def convert_size(size_bytes):
+    """
+    >>> convert_size(1024)
+    '1.0 KB'
+    """
     if size_bytes == 0:
         return "0B"
     size_name = ("B", "KB", "MB", "GB", "TB")
     i = int(math.floor(math.log(size_bytes, 1024)))
     p = math.pow(1024, i)
     s = round(size_bytes / p, 2)
-    return f"{s} {size_name[i]}"
+    return f"{s} {size_name[i]}"  
+
+if __name__ == '__main__':
+    import doctest
+    print(doctest.testmod())
