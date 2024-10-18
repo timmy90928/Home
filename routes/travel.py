@@ -41,7 +41,7 @@ def search():
 def travel_map():
     pp = ''
     for n, (place,date,pos) in enumerate(db.get_col('travel', "place,strftime('%Y-%m-%d', datestamp, 'unixepoch','localtime'),position")):
-        if not pos: continue
+        if not pos or pos=='None' or pos=='': continue
         if n == 0:
             pp += f"{place},{date},{pos}"
         else:
