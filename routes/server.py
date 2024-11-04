@@ -48,7 +48,7 @@ def upload():
     try: file = check_file(request)
     except AssertionError as e: return str(e), 500
     if file.filename == 'home.db':
-        copy_file(f'./writable/home_{now_time().replace("-","_").replace(" ","_").replace(":","_")}.db')
+        copy('./writable/home.db',f'./writable/home_{now_time().replace("-","_").replace(" ","_").replace(":","_")}.db')
     file.save(path.join(app.config['UPLOAD_FOLDER'], file.filename))
     return redirect('/server/cloud')
 

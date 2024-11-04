@@ -14,7 +14,7 @@ def get_latest_release(repo_name:str, repo_owner:str = 'timmy90928') -> tuple[st
     Returns: A tuple of (latest_version, latest_download_url, updated)
     """
     url = f'https://api.github.com/repos/{repo_owner}/{repo_name}/releases/latest'
-    # https://api.github.com/repos/timmy90928/item_manager/releases/latest
+    # https://api.github.com/repos/timmy90928/Home/releases/latest
     response = requests.get(url)
     if response.status_code == 200:
         release_info = response.json()              # Parse the JSON response.

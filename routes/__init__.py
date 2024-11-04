@@ -23,12 +23,13 @@ class User(UserMixin):
         self.rolenum = roles[role]
 
 ### Main App ###
-app = Flask("Home")
-systray = SysTray('Home')
+APPNAME = 'Home'
+app = Flask(APPNAME)
+systray = SysTray(APPNAME)
 
 ### Configurations ###
 app.secret_key = '62940eecccdf094995b09e1191b6e0afdcba8ee3293a5c893e146d0a5cf43210' # home-by-timmy90928
-app.config['TITLE'] = 'Home'
+app.config['TITLE'] = APPNAME
 app.config['DESCRIPTION'] = 'Home management system'
 app.config['UPLOAD_FOLDER'] = path.join(getcwd(), 'writable') # Define the address of the upload folder.
 app.config['SERVER_RUN_TIME'] = now_time()

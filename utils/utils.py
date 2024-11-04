@@ -1,5 +1,7 @@
 from datetime import timedelta,datetime,timedelta
-from shutil import copy2
+from shutil import copy2, rmtree, ignore_patterns, copytree
+from os import environ,mkdir
+from os.path import isfile, isdir, split as path_split,join
 from base64 import b64encode,b64decode
 from typing import Any, Union
 import math
@@ -8,7 +10,6 @@ from json import load, dump
 from pystray import MenuItem, Icon as _icon, Menu as StrayMenu
 from PIL import Image
 from threading import Thread
-import os
 import webbrowser
 
 def hash(text:str) -> str:
@@ -101,7 +102,7 @@ class SysTray(_icon):
     def on_quit(self, icon, item):
         self.notify("伺服器已關閉","結束通知")
         self.stop()
-        os._exit(0)
+        exit(0)
     
     def show_ip(self, icon, item):
         from utils.web import get_external_ip, get_local_ip
@@ -170,23 +171,33 @@ def timestamp(year=1999, month=1, day=1, hour=0, minute=0, second=0, dday=0, dho
         t = datetime.strptime(f'{year:04}-{month:02}-{day:02} {hour:02}:{minute:02}:{second:02}', "%Y-%m-%d %H:%M:%S") + dt
         return t.timestamp()
 
-def copy_file(dst: str, src: str = './writable/home.db') -> None:
+
+def copy(src:str, dst:str, ignore:list = [], return_format:str = '{mode}: {src} -> {dst}') -> str:
     """
     Copies a file from the `src` path to the `dst` path.
 
-    :param src: The source file path. Must be a Path object.
+    :param src: The source file path. Must be a Path object.('./writable/home.db')
     :param dst: The destination file path. Must be a Path object.
-    :return: None
 
-    >>> copy_file()
+    >>> copy()
     Traceback (most recent call last):
     ...
-    TypeError: copy_file() missing 1 required positional argument: 'dst'
+    TypeError: copy() missing 2 required positional arguments: 'src' and 'dst'
     """
     if not src or not dst:
         raise ValueError("Both src and dst must be non-empty")
     try:
-        copy2(src, dst)
+        if isdir(src):
+            mode = 'dir'
+            dst = join(dst,path_split(src)[-1])
+            copytree(src, dst, ignore=ignore_patterns(*ignore), dirs_exist_ok=True)
+        elif isfile(src):
+            mode = 'file'
+            copy2(src, dst)
+        else:
+            raise ValueError(f"{src} is neither a file nor a directory")
+        _format = {'src': src, 'dst': dst, 'mode':mode}
+        return return_format.format(**_format)
     except OSError as e:
         raise OSError(f"Error copying file from {src} to {dst}: {e}") from e
 
