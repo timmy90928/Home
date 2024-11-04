@@ -53,3 +53,12 @@ def test():
         response = {'message': 'Received!', 'data': data}
         return jsonify(response)
     return render_template('test/fetch.html')
+
+@app.route('/.well-known/pki-validation/<filename>')
+def serve_validation_file(filename):
+    """
+    For use with [ZeroSSL] verified domains.
+
+    [ZeroSSL]: https://manage.sslforfree.com/dashboard "SSL for Free"
+    """
+    return send_from_directory('./static', filename)
