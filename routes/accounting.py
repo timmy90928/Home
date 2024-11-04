@@ -23,7 +23,7 @@ def monthly_analysis(year, month):
     i  = analysis(year, month, '收入')
     e_values = list(e.values())
     i_values = list(i.values())
-    datas = db(f"SELECT {HEADS_SQL} FROM Accounting WHERE Datestamp BETWEEN {timestamp(year,month)} AND {timestamp(year,int(month)+1,dsecond=-1)}")
+    datas = db(f"SELECT {HEADS_SQL} FROM Accounting WHERE Datestamp BETWEEN {timestamp(year,month)} AND {timestamp(year,int(month)+1,dsecond=-1)} ORDER BY Datestamp DESC")
     
     return render_template('accounting/search.html',title='月分析',month = f'{year}-{month}',t_datas = [i_values[-1],e_values[-1],int(i_values[-1])-int(e_values[-1])],
                            datas = datas, heads = HEADS,
