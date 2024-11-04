@@ -16,6 +16,10 @@ Run `server_run.py`
 ### Make
 Run `make.bat`. ([tutorial](./docs/build.md))
 
+### Nginx
+1. Download [nginx](https://nginx.org/en/download.html)
+1. Copy [nginx.conf](./docs/nginx.conf) to `...\nginx\conf\nginx.conf`
+
 Functions 
 ---------
 * Account management.
