@@ -1,3 +1,6 @@
+1.0.0-beta.4
+------------
+* 使用wsgi規範(Python Web Server GateWay Interface)，以增加效率
 1.0.0-beta.3
 ------------
 * 修復記帳中月分析的日期問題

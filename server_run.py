@@ -2,11 +2,16 @@
 # pip freeze > requirements.txt
 from routes import app, CONFIG, ALL_BP, systray
 from utils.utils import now_time
+from wsgiref.simple_server import make_server
 
 ### Register blueprint ###
 for bp in ALL_BP:
     app.register_blueprint(bp)
 
 if __name__ == "__main__":
-    if CONFIG('server/DEBUG') == False: systray.start()
-    app.run(host="0.0.0.0",port="928",debug=CONFIG('server/DEBUG'))
+    if CONFIG('server/DEBUG') == True:
+        app.run(host="0.0.0.0",port="928",debug=True)
+    else:
+        systray.start()
+        with make_server('0.0.0.0', 928, app) as server:
+            server.serve_forever()
