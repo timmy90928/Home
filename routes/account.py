@@ -3,6 +3,7 @@ from . import Blueprint, render_template, request, redirect, url_for, db, User, 
 from . import login_user, logout_user, login_required, current_user
 from utils.utils import hash
 
+# https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/autocomplete
 account_bp = Blueprint('account', __name__, url_prefix='/account')
 HEADS = ['流水號', '帳號', '名稱', '權限']
 HEADS_SQL = "id,username,name,role"
