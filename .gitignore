@@ -2,6 +2,7 @@
 test.py
 temp/
 writable/
+cloud/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

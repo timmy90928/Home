@@ -27,3 +27,5 @@ Functions
 * Travel diary.(travel map)
 * Accounting function.
 * System tray icon.
+
+### For version update records, please see [version.md](./docs/version.md)
