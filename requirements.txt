@@ -29,6 +29,7 @@ platformdirs==4.3.6
 pyinstaller==6.10.0
 pyinstaller-hooks-contrib==2024.8
 pystray==0.19.5
+python-dotenv==1.0.1
 pywin32==306
 pywin32-ctypes==0.2.3
 referencing==0.35.1

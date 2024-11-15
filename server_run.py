@@ -3,6 +3,8 @@
 from routes import app, CONFIG, ALL_BP, systray
 from utils.utils import now_time
 from wsgiref.simple_server import make_server
+from dotenv import load_dotenv # pip install python-dotenv
+load_dotenv()
 
 ### Register blueprint ###
 for bp in ALL_BP:
