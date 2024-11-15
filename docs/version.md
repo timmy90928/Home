@@ -1,6 +1,5 @@
 v1.0.0-beta.4
 ------------
-* 使用wsgi規範(Python Web Server GateWay Interface)，以增加效率
 * 將月分析排序改為日期
 * 瀏覽器可以自動填入個人資訊
 * 修復旅遊地圖無法全部顯示的問題

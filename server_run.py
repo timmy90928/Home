@@ -15,5 +15,4 @@ if __name__ == "__main__":
         app.run(host="0.0.0.0",port="928",debug=True)
     else:
         systray.start()
-        with make_server('0.0.0.0', 928, app) as server:
-            server.serve_forever()
+        app.run(host="0.0.0.0",port="928",debug=False)

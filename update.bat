@@ -84,7 +84,7 @@ for %%i in ("%INSTALL_DIR%\*") do (
 
 :: Copy the new file to the installation folder.
 echo Copying new files to installation directory, excluding the "write" folder...
-robocopy "%EXTRACT_DIR%/home" %INSTALL_DIR% /mir /xd %EXCLUDE_DIR% /xf update.bat
+robocopy "%EXTRACT_DIR%" %INSTALL_DIR% /mir /xd %EXCLUDE_DIR% /xf update.bat
 
 :: Clean up temporary files.
 echo Cleaning up temporary files...
