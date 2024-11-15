@@ -5,6 +5,7 @@ v1.0.0-beta.4
 * 瀏覽器可以自動填入個人資訊
 * 修復旅遊地圖無法全部顯示的問題
 * 修復在http中無法定位的問題(暫時使用Google Geolocation API，等使用https時，恢復使用Browser geolocation API)
+* 新增執行update.bat可一鍵更新
 
 v1.0.0-beta.3
 ------------
