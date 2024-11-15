@@ -1,16 +1,18 @@
-1.0.0-beta.4
+v1.0.0-beta.4
 ------------
 * 使用wsgi規範(Python Web Server GateWay Interface)，以增加效率
 * 將月分析排序改為日期
 * 瀏覽器可以自動填入個人資訊
+* 修復旅遊地圖無法全部顯示的問題
+* 修復在http中無法定位的問題(暫時使用Google Geolocation API，等使用https時，恢復使用Browser geolocation API)
 
-1.0.0-beta.3
+v1.0.0-beta.3
 ------------
 * 修復記帳中月分析的日期問題
 * 新增viewer權限
 * 新增旅遊地圖(GPS定位)
 
-1.0.0-beta.2
+v1.0.0-beta.2
 ------------
 * 新增系統托盤圖示
 * 新增取得內網與外網IP
