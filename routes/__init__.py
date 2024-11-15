@@ -2,7 +2,7 @@ from flask import Flask, Blueprint, render_template, request, url_for,redirect,m
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user as _current_user # https://ithelp.ithome.com.tw/articles/10328420
 from os import listdir, path, stat, remove ,getcwd
 from utils.db import database
-from utils.utils import SysTray, json, now_time, timestamp
+from utils.utils import SysTray, json, now_time, timestamp, get_data_path
 # from utils.web import User
 from time import time
 
@@ -26,12 +26,13 @@ class User(UserMixin):
 APPNAME = 'Home'
 app = Flask(APPNAME)
 systray = SysTray(APPNAME)
+program_data_exists, DATAPATH = get_data_path(APPNAME,['writable']) # root_dir = getcwd() 
 
 ### Configurations ###
 app.secret_key = '62940eecccdf094995b09e1191b6e0afdcba8ee3293a5c893e146d0a5cf43210' # home-by-timmy90928
 app.config['TITLE'] = APPNAME
 app.config['DESCRIPTION'] = 'Home management system'
-app.config['UPLOAD_FOLDER'] = path.join(getcwd(), 'writable') # Define the address of the upload folder.
+app.config['UPLOAD_FOLDER'] = path.join(DATAPATH, 'writable') # Define the address of the upload folder.
 app.config['SERVER_RUN_TIME'] = now_time()
 app.config['VERSION'] = '1.0.0-beta.4'  # __version__ = ".".join(("0", "6", "3"))
 app.config['AUTHOR'] = 'Wei-Wen Wu'
