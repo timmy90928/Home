@@ -2,8 +2,8 @@ from . import (app, Blueprint, render_template, request, redirect, clients, send
                timestamp, now_time, listdir, path, stat, remove)
 from . import login_user, logout_user, login_required, current_user
 from platform import system,node
-from utils.web import get_latest_release, check_file
-from utils.utils import copy_file, convert_size
+from utils.web import get_latest_release, check_file, download_file
+from utils.utils import copy, convert_size, base64
 
 server_bp = Blueprint('server', __name__, url_prefix='/server')
 
@@ -14,7 +14,7 @@ def index():
 @server_bp.route('/info', methods=['GET'])
 def info():
     try: 
-        latest_version, latest_download_url, updated = get_latest_release(app.config['TITLE'])
+        latest_version,web,[latest_download_url, size, updated] = get_latest_release(app.config['TITLE'])
     except:
         latest_version, latest_download_url, updated = '無法取得最新版本資訊', '#', '無法取得最新版本資訊'
     data = [
@@ -24,9 +24,17 @@ def info():
         ['伺服器啟動時間', app.config['SERVER_RUN_TIME']],
         ['目前連線數',len(clients)],
         ['目前連線IP', str('、'.join(clients))],
-        ['最新版本', f'<a href="{latest_download_url}">{latest_version}</a>  (更新時間: {updated})']
+        ['最新版本', f'<a href="{web}">{latest_version}</a>  (更新時間: {updated}'],
     ]
     return render_template('common/list.html', title='伺服器資訊',heads=['Key','Value'],datas=data)
+
+@server_bp.route('/update/<version>', methods=['GET'])
+@login_required
+def update(version):
+    # <a href="/server/update/{base64(latest_download_url).encode()}">更新</a>'
+    if current_user.rolenum > 2:  return redirect('/error/role/2')
+    exit()
+    return redirect('/server/info')
 
 @server_bp.route('/cloud', methods=['GET'])
 @login_required
