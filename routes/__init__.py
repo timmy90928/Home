@@ -3,7 +3,6 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 from os import listdir, path, stat, remove ,getcwd
 from utils.db import database
 from utils.utils import SysTray, json, now_time, timestamp, get_data_path
-# from utils.web import User
 from time import time
 
 class User(UserMixin):
@@ -34,7 +33,7 @@ app.config['TITLE'] = APPNAME
 app.config['DESCRIPTION'] = 'Home management system'
 app.config['UPLOAD_FOLDER'] = path.join(DATAPATH, 'writable') # Define the address of the upload folder.
 app.config['SERVER_RUN_TIME'] = now_time()
-app.config['VERSION'] = '1.0.0-beta.4'  # __version__ = ".".join(("0", "6", "3"))
+app.config['VERSION'] = 'v1.0.0-beta.5'  # __version__ = ".".join(("0", "6", "3"))
 app.config['AUTHOR'] = 'Wei-Wen Wu'
 app.config['AUTHOR_EMAIL'] = 'timmy90928@gmail.com'
 app.config['GITHUB_URL'] = 'https://github.com/timmy90928/Home'

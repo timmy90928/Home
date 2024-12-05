@@ -12,6 +12,7 @@ from pystray import MenuItem, Icon as _icon, Menu as StrayMenu
 from PIL import Image
 from threading import Thread
 import webbrowser
+from typing import overload
 
 def hash(text:str) -> str:
     """
@@ -146,6 +147,12 @@ def now_time() -> str:
     """
     return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
+@overload
+def timestamp(string: str) -> float:...
+@overload
+def timestamp(ts: Union[int,float]) -> str:...
+@overload
+def timestamp(year: int, month: int, day: int = 1, hour: int = 0, minute: int = 0, second: int = 0, dday: int = 0, dhour: int = 0, dminute: int = 0, dsecond: int = 0) -> float:...
 def timestamp(year=1999, month=1, day=1, hour=0, minute=0, second=0, dday=0, dhour=0, dminute=0, dsecond=0, ts:Union[int,float] = None, string:str = None) -> float:
     """
     ## Example
@@ -169,6 +176,7 @@ def timestamp(year=1999, month=1, day=1, hour=0, minute=0, second=0, dday=0, dho
             return timestamp(year=int(arr0[0]), month=int(arr0[1]), day=int(arr0[2]),hour=int(arr1[0]), minute=int(arr1[1]), second=int(arr1[2]))
     else:
         dt = timedelta(days=dday, hours=dhour, minutes=dminute, seconds=dsecond)
+        if int(month) > 12: year, month = int(year)+1, int(month)-12
         t = datetime.strptime(f'{year:04}-{month:02}-{day:02} {hour:02}:{minute:02}:{second:02}', "%Y-%m-%d %H:%M:%S") + dt
         return t.timestamp()
 
