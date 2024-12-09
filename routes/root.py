@@ -1,4 +1,4 @@
-from . import Blueprint, render_template, request, db, jsonify,listdir, app, send_from_directory, redirect
+from . import Blueprint, render_template, request, db, jsonify,listdir, app, send_from_directory, redirect, abort
 from . import login_user, logout_user, login_required, current_user
 
 root_bp = Blueprint('root', __name__)
@@ -17,7 +17,16 @@ def home():
 def send_image(filename):
     return send_from_directory('writable', filename)
 
-@root_bp.route("/show/<table_name>", methods=['GET'])
+@root_bp.route("/db", methods=['GET'])
+@login_required
+def db_index():
+    if current_user.rolenum > 0:  return abort(401, response="此頁面僅提供給開發者使用")
+    datas = []
+    for table in db.get_table():
+        datas.append([f'<a href="/db/{table}">{table}</a>'])
+    return render_template('common/list.html',title='資料表',datas=datas, heads=['資料表名稱'])
+
+@root_bp.route("/db/<table_name>", methods=['GET'])
 @login_required
 def show(table_name):
     if current_user.rolenum > 0:  return redirect('/error/role/0')
@@ -54,7 +63,7 @@ def test():
         return jsonify(response)
     return render_template('test/fetch.html')
 
-@app.route('/.well-known/pki-validation/<filename>')
+@root_bp.route('/.well-known/pki-validation/<filename>')
 def serve_validation_file(filename):
     """
     For use with [ZeroSSL] verified domains.
@@ -62,3 +71,7 @@ def serve_validation_file(filename):
     [ZeroSSL]: https://manage.sslforfree.com/dashboard "SSL for Free"
     """
     return send_from_directory('./static', filename)
+
+@root_bp.route('/cause/<int:status_code>', methods=['GET'])
+def cause(status_code:int):
+    abort(status_code, response="此為測試用")
