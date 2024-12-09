@@ -1,5 +1,5 @@
-from flask import jsonify, request, Request
-
+from flask import Flask, jsonify, request, Request, Response, abort
+from json import dumps, load
 from flask_login import UserMixin# https://ithelp.ithome.com.tw/articles/10328420
 from requests import get as requests_get
 from datetime import datetime, timedelta
@@ -64,3 +64,30 @@ def check_file(request:Request):
     if file.filename == '':
         raise AssertionError('No selected file')
     return file
+
+def jsonify(obj):
+    """
+    Wrapper for flask.jsonify that formats the output nicely
+    and ensures that the response is sent with the correct mimetype.
+
+    :param obj: The object to be serialized into json
+    :return: A flask.Response object with the json data
+    """
+    jsonify_config = {"sort_keys": False, "indent": 4,'ensure_ascii':False}
+    json_data = dumps(obj, **jsonify_config)
+    return Response(json_data, mimetype='application/json')
+
+from typing import Optional, Callable, Any
+from functools import wraps
+def errorCallback(note:Optional[str]=None):
+    
+    def decorator(func:Callable):
+        @wraps(func)
+        def wrap(*args, **kwargs):
+            try:
+                return func(*args, **kwargs)   # print(func.__name__)
+            except Exception as e:
+                abort(500, description=f"[{e.__class__.__name__} ({func.__name__})] {e}",  response=note)
+        return wrap
+    return decorator
+

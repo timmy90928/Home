@@ -1,7 +1,7 @@
 from datetime import timedelta,datetime,timedelta
 from shutil import copy2, rmtree, ignore_patterns, copytree
 from os import environ,mkdir
-from os.path import isfile, isdir, split as path_split,join
+from os.path import isfile, isdir, split as path_split,join, abspath, exists
 from base64 import b64encode,b64decode
 from urllib.parse import quote, unquote
 from typing import Any, Union, Optional, Callable
@@ -12,7 +12,7 @@ from pystray import MenuItem, Icon as _icon, Menu as StrayMenu
 from PIL import Image
 from threading import Thread
 import webbrowser
-from typing import overload
+from typing import overload, Literal, Optional
 
 def hash(text:str) -> str:
     """
@@ -40,7 +40,25 @@ class json:
     def __init__(self, path:str) -> None:
         self.path = path
 
-    def __call__(self, key:str, value = None) -> Any:
+    @overload
+    def __call__(self, key:str) -> Any: 
+        """
+        Get the value of the specified key in the JSON file.
+
+        ### Example
+        >>> _json('base/UPLOAD_FOLDER')
+        """
+    ...
+    @overload
+    def __call__(self, key:str, value:Any) -> dict: 
+        """
+        Set the value of the specified key in the JSON file.
+
+        ### Example
+        >>> _json('base/UPLOAD_FOLDER', 'new/path')
+        """
+    ...
+    def __call__(self, key:str, value = None):
         keys = key.split('/')
         if value: 
             result = self._set(keys, value)
@@ -48,6 +66,15 @@ class json:
             return result
         else:
             return self._get(keys)
+
+    def get(self, key:str, default = None):
+        keys = key.split('/')
+        try:
+            return self._get(keys)
+        except KeyError:
+            result = self._set(keys, default)
+            self.dump(result)
+            return default
 
     def _set(self, keys:list, value:Any) -> dict:
         temp =  self.load().copy()
@@ -139,13 +166,13 @@ def msgw(title:str="Title", text:str="contant", style:int=0, time:int=0) -> int:
     # MessageBoxTimeoutW(父窗口句柄,消息內容,標題,按鈕,語言ID,等待時間)
     return ctypes.windll.user32.MessageBoxTimeoutW(0, text, title, style,0,time)
 
-def now_time() -> str:
+def now_time(_format = '%Y-%m-%d %H:%M:%S') -> str:
     """
     ## Example
     >>> now_time() # doctest: +SKIP
     '2022-08-31 23:59:59'
     """
-    return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    return datetime.now().strftime(_format)
 
 @overload
 def timestamp(string: str) -> float:...
@@ -209,8 +236,37 @@ def copy(src:str, dst:str, ignore:list = [], return_format:str = '{mode}: {src} 
         return return_format.format(**_format)
     except OSError as e:
         raise OSError(f"Error copying file from {src} to {dst}: {e}") from e
+
+class Path:
+    def __init__(self, path: str):
+        self.path = path
+        self.exist = exists(path)
+    @property
+    def abspath(self):
+        return abspath(self.path)
+    @property
+    def dir(self):
+        return path_split(self.path)[0]
+    @property
+    def file(self):
+        return path_split(self.path)[-1]
+    def __str__(self):
+        return self.path
+    def get(self, *path):
+        return join(self.path, *path)
     
-def get_data_path(dir_name:str, copy_dir_or_file:list = [], root_dir:str = None) -> Union[bool, str]:
+    @property
+    def type(self) -> Optional[Literal['dir', 'file']]:
+        src = self.path
+        if isdir(src):
+            return 'dir'
+        elif isfile(src):
+            return 'file'
+        else:
+            return None
+
+    
+def get_data_path(dir_name:str, copy_dir_or_file:list = [], root_dir:str = None) -> Path:
     """
     Return the path to the directory for storing application data, or a tuple of a boolean and the path.
     
@@ -222,17 +278,25 @@ def get_data_path(dir_name:str, copy_dir_or_file:list = [], root_dir:str = None)
     :return: A tuple of a boolean and the path to the created directory.If the directory already existed, the boolean will be True.
 
     """
+    def _mkDir(): 
+        for dir_or_file in copy_dir_or_file: 
+            _n = join(program_data_path, dir_or_file)
+            if not exists(_n):  mkdir(_n)
     program_data_path = join(environ.get('ProgramData', '/var/lib'), dir_name)
     no_exists = not isdir(program_data_path)
+    _mkDir()
     if no_exists:
         mkdir(program_data_path)
         for dir_or_file in copy_dir_or_file:
             dir_or_file = join(root_dir, dir_or_file) if root_dir else dir_or_file
-            c =  copy(dir_or_file, program_data_path)
-            # print(c)
-        return False,program_data_path
+            copy(dir_or_file, program_data_path)
+        _p = Path(program_data_path)
+        _p.exist = False
+        return _p
     else:
-        return True,program_data_path
+        _p = Path(program_data_path)
+        _p.exist = True
+        return _p
     
 class base64:
     """

@@ -32,6 +32,9 @@ class database:
     def get_head(self,table) -> list:
         return [column[1] for column in self.__call__(f"PRAGMA table_info({table})")]
     
+    def get_table(self) -> list:
+        return [table[0] for table in self.__call__("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'")]
+    
     def get_col(self,table, col_name, search:dict = {}, distinct = False, customize = ''):
         """
         ```
@@ -59,16 +62,11 @@ class database:
         col_name='*' if col_name==None else f"{col_name}"
         return self.__call__(f"SELECT {col_name} FROM {table} WHERE {row_name[0]} = '{row_name[1]}'")
         
-    # def delete(self,table:str,row_name:list):
-    #     """
-    #     db.delete('Data',['ID','1'])
-    #     """
-    #     if msgw('刪除','請問是否要刪除?',1,0)==1:
-    #         self.__call__(f"DELETE FROM {table} WHERE {row_name[0]} = '{row_name[1]}'")
-    #         self.commit()
-    #         return True
-    #     else:
-    #         return False
+    def exist(self, table:str, row_name:list) -> bool:
+        """
+        db.exist('Data',['ID','1'])
+        """
+        return bool(self.__call__(f"SELECT EXISTS(SELECT 1 FROM {table} WHERE {row_name[0]} = '{row_name[1]}')")[0][0])
 
     def delete(self, table:str, row_name:list):
         """
