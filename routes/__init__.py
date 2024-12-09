@@ -1,8 +1,9 @@
-from flask import Flask, Blueprint, render_template, request, url_for,redirect,make_response,session,abort,send_from_directory, jsonify
+from flask import Flask, Blueprint, render_template, request, url_for,redirect,make_response,session,abort,send_from_directory, jsonify, Response
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user as _current_user # https://ithelp.ithome.com.tw/articles/10328420
 from os import listdir, path, stat, remove ,getcwd
 from utils.db import database
 from utils.utils import SysTray, json, now_time, timestamp, get_data_path
+from utils.web import errorCallback, set_file_handler
 from time import time
 
 class User(UserMixin):
@@ -25,13 +26,15 @@ class User(UserMixin):
 APPNAME = 'Home'
 app = Flask(APPNAME)
 systray = SysTray(APPNAME)
-program_data_exists, DATAPATH = get_data_path(APPNAME,['writable']) # root_dir = getcwd() 
+DATAPATH = get_data_path(APPNAME,['writable', 'log']) # root_dir = getcwd() 
+CONFIG = json(DATAPATH.get('writable', 'config.json'))
 
 ### Configurations ###
 app.secret_key = '62940eecccdf094995b09e1191b6e0afdcba8ee3293a5c893e146d0a5cf43210' # home-by-timmy90928
 app.config['TITLE'] = APPNAME
 app.config['DESCRIPTION'] = 'Home management system'
-app.config['UPLOAD_FOLDER'] = path.join(DATAPATH, 'writable') # Define the address of the upload folder.
+app.config['UPLOAD_FOLDER'] = DATAPATH.get('writable') # Define the address of the upload folder.
+app.config['tcloud'] = CONFIG.get('base/tcloud', "./")
 app.config['SERVER_RUN_TIME'] = now_time()
 app.config['VERSION'] = 'v1.0.0-beta.5'  # __version__ = ".".join(("0", "6", "3"))
 app.config['AUTHOR'] = 'Wei-Wen Wu'
@@ -40,10 +43,11 @@ app.config['GITHUB_URL'] = 'https://github.com/timmy90928/Home'
 app.config['COPYRIGHT'] = '(c) 2024 Wei-Wen Wu'
 app.config['MAX_CONTENT_LENGTH'] = 1024 * 1024 * 1024 # Set the maximum upload file size to 1024MB (1GB).
 
+LOG = set_file_handler(app, DATAPATH.get('log', f"log-{app.config['VERSION']}")) # Logger
+db:database = database(DATAPATH.get('writable', 'home.db'))
+
 login_manager = LoginManager(app)
 login_manager.login_view = '/account/login'
-db:database = database(path.join(app.config['UPLOAD_FOLDER'],'home.db'))
-CONFIG = json(path.join(app.config['UPLOAD_FOLDER'],'config.json'))
 current_user:User = _current_user
 clients = {}
 
@@ -65,6 +69,16 @@ def track_connection() -> None:
     """Tracks all the current clients (by IP) and stores them in the set clients."""
     ip = request.remote_addr
     clients[ip] = time()
+
+@app.after_request
+def log_status_code(response:Response):
+    ip = request.remote_addr
+    page = request.path
+    method = request.method
+    status_code = response.status_code
+
+    if status_code != 304: LOG.debug(f'{status_code} >>> {method:^5} >>> {ip:^12} >>> {page}')
+    return response
 
 @app.teardown_request
 def remove_client(exc=None):
