@@ -51,7 +51,7 @@ def search():
             'ie': form.get('ie') if form.get('ie') else '%',
             'Category': form.get('Category') if form.get('Category') else '%',
             'Detail': form.get('Detail') if form.get('Detail') else '%',
-            'note': form.get('note') if form.get('note') else '%'
+            'note': f"%{form.get('note')}%" if form.get('note') else '%'
         }
         
         date = f"AND Datestamp BETWEEN strftime('%s', '{startDate}') AND strftime('%s', '{endDate}')" if form.get('startDate') and form.get('endDate') else ''
@@ -109,7 +109,7 @@ def data_add():
         'note': form.get('note')
     }
     db.add('Accounting', data)
-    return redirect(f'/alert/於{now_time()}新增成功')
+    return redirect(f'/alert/於{now_time()}新增成功?to=/accounting/add')
 
 @accounting_bp.route('/database/revise/<id>', methods=['POST'])
 def data_revise(id):
