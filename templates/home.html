@@ -1,9 +1,12 @@
-<!DOCTYPE html>
-<head>
-    <title>Home</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='common.css') }}">
-</head>
-{% include 'common/header.html' %}
+{% extends "common/base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block head %}
+{{ super() }}
+{% endblock %}
+
+{% block top %}
 <style>
     h3 {
         background-color: #024991;
@@ -55,7 +58,11 @@
         justify-content: center; /* 水平置中 */
     }
 </style>
-<body>
+{% endblock %}
+
+
+{% block body %}
+
     <div class="container">
         <!-- Accounting -->
         <h3>會計</h3>
@@ -78,18 +85,17 @@
                     <p>搜尋</p>
                 </a>
             </li>
-            <li class="panel-icon">
-                <a href="/accounting/edit/class">
-                    <img src="{{ url_for('static', filename='picture/edit.png') }}" alt="編輯" class="my-icons" />
-                    <p>編輯</p>
-                </a>
-            </li>
-            
         </ul>
 
         <!-- Other -->
         <h3>其他</h3>
         <ul class="panel-icons">
+            <li class="panel-icon">
+                <a href="/tcloud/root">
+                    <img src="{{ url_for('static', filename='picture/tcloud.png') }}" alt="TCloud" class="my-icons" />
+                    <p>TCloud</p>
+                </a>
+            </li>
             <li class="panel-icon">
                 <a href="/travel">
                     <img src="{{ url_for('static', filename='picture/travel.png') }}" alt="旅遊日記" class="my-icons" />
@@ -97,7 +103,7 @@
                 </a>
             </li>
             <li class="panel-icon">
-                <a href="#">
+                <a href="/record">
                     <img src="{{ url_for('static', filename='picture/record.ico') }}" alt="紀錄" class="my-icons" />
                     <p>紀錄</p>
                 </a>
@@ -127,7 +133,7 @@
                 </a>
             </li>
             <li class="panel-icon">
-                <a href="">
+                <a href="/server/setting">
                     <img src="{{ url_for('static', filename='picture/setting.png') }}" alt="設定" class="my-icons" />
                     <p>設定</p>
                 </a>
@@ -147,9 +153,15 @@
         <h3>開發人員</h3>
         <ul class="panel-icons">
             <li class="panel-icon">
-                <a href="/accounting/database">
+                <a href="/db">
                     <img src="{{ url_for('static', filename='picture/database.png') }}" alt="伺服器資訊" class="my-icons" />
                     <p>資料庫</p>
+                </a>
+            </li>
+            <li class="panel-icon">
+                <a href="/admin">
+                    <img src="{{ url_for('static', filename='picture/Paomedia-Small-N-Flat-Keyring.ico') }}" alt="管理員頁面" class="my-icons" />
+                    <p>管理員</p>
                 </a>
             </li>
         </ul>
@@ -158,7 +170,6 @@
     
     
 
-</body>
-{% include 'common/footer.html' %}
-</html>
+{% endblock %}
+
 
