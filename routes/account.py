@@ -1,7 +1,9 @@
 
-from . import Blueprint, render_template, request, redirect, url_for, db, User, jsonify, app
-from . import login_user, logout_user, login_required, current_user
+from . import *
 from utils.utils import hash
+
+from utils.g import current_user, current, User
+db = current.db
 
 # https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/autocomplete
 account_bp = Blueprint('account', __name__, url_prefix='/account')
@@ -48,10 +50,9 @@ def login():
         username = request.form.get('username')
         password = request.form.get('password')
 
-        if password == app.secret_key: 
+        if password == current_app.secret_key: 
             login_user(User(0),remember=True)
             return redirect('/home')
-
         try: verify = db.get_row('account', ['username',username],'id,password')[0]
         except: return redirect('/alert/無此帳號')
 

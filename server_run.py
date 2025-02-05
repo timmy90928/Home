@@ -1,18 +1,19 @@
-# pigar gen --with-referenced-comments
-# pip freeze > requirements.txt
-from routes import app, CONFIG, ALL_BP, systray
-from utils.utils import now_time
-from wsgiref.simple_server import make_server
-from dotenv import load_dotenv # pip install python-dotenv
-load_dotenv()
 
-### Register blueprint ###
-for bp in ALL_BP:
-    app.register_blueprint(bp)
+###* requirements ###
+#? pigar gen --with-referenced-comments
+#? pip freeze > requirements.txt
+
+###* i18n ###
+#? pybabel extract -F babel.cfg -o messages.pot .
+#? pybabel update -i messages.pot -d translations
+#? pybabel compile -d translations
+
+from app import create_app
+from utils.g import current
+from dotenv import load_dotenv # pip install python-dotenv
 
 if __name__ == "__main__":
-    if CONFIG('server/DEBUG') == True:
-        app.run(host="0.0.0.0",port="928",debug=True)
-    else:
-        systray.start()
-        app.run(host="0.0.0.0",port="928",debug=False)
+    load_dotenv()
+
+    APP = create_app('development' if current.config.get('server/DEBUG') else 'production')
+    APP.run(host="0.0.0.0",port="928")

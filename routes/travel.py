@@ -1,6 +1,9 @@
-from . import Blueprint, render_template, request, db, redirect, timestamp, now_time, current_user
+from . import *
+from utils.g import current_user, current
 
+db = current.db
 travel_bp = Blueprint('travel', __name__, url_prefix='/travel')
+
 HEADS = ['流水號','行程名稱','日期','類別','地點','人員','備註']
 HEADS_SQL = "id,name,strftime('%Y-%m-%d', datestamp, 'unixepoch','localtime'),class,place,people,note"
 

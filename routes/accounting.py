@@ -1,7 +1,9 @@
-from . import Blueprint, render_template, request, redirect, login_required, current_user, db, jsonify, CONFIG, now_time, timestamp
+from . import *
 from utils.db import IE_TOTAL_SQL
+from utils.g import current_user, current
 
 accounting_bp = Blueprint('accounting', __name__, url_prefix='/accounting')
+db = current.db
 HEADS = ['流水號','日期','收支','類別','細項','金額','備註']
 HEADS_SQL = "id,strftime('%Y-%m-%d', Datestamp, 'unixepoch','localtime'),ie,Category,Detail,Amount,note"
 
@@ -14,7 +16,8 @@ def show_database():
 @login_required
 def add():
     if current_user.rolenum > 2:  return redirect('/error/role/2')
-    return render_template('accounting/add.html')
+    notelist = current.db.get_col('Accounting', 'note', distinct=True)
+    return render_template('accounting/add.html', notelist=notelist)
 
 @accounting_bp.route('/<year>/<month>', methods=['GET'])
 def monthly_analysis(year, month):
@@ -76,9 +79,9 @@ def search():
 @accounting_bp.route('/edit/class', methods=['GET'])
 def editclass():
     if current_user.rolenum > 2:  return redirect('/error/role/2')
-    ie_i = CONFIG('ie_class/收入')
-    ie_e = CONFIG('ie_class/支出')
-    # list(CONFIG('ie_class/收入').keys())
+    ie_i = current.config('ie_class/收入')
+    ie_e = current.config('ie_class/支出')
+    # list(current.config('ie_class/收入').keys())
 
     return render_template('accounting/editclass.html',ie_i=ie_i,ie_e=ie_e)
 
@@ -92,7 +95,7 @@ def editdata(id):
 def getCategories():
     data = request.json  # Get the JSON data in the request.
     ie = data['ie']
-    Category = CONFIG(f'ie_class/{ie}')
+    Category = current.config(f'ie_class/{ie}')
     response = {'message': 'Received!', 'categories': Category}
     return jsonify(response)
 
@@ -153,7 +156,7 @@ def analysis(year, month, ie='支出'):
         FROM        Accounting
         WHERE       ie = '{ie}' AND Datestamp BETWEEN {timestamp(year,month)} AND {timestamp(year,int(month)+1,dsecond=-1)};
         """)
-    j:dict = CONFIG(f'ie_class/{ie}').copy()
+    j:dict = current.config(f'ie_class/{ie}').copy()
     for i in data:
         j[i[0]] = i[1]
     
