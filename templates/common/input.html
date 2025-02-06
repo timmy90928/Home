@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<head>
+    <title>輸入-{{ title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='common.css') }}">
+</head>
+{% include 'common/header.html' %}
+<body>
+    
+    <div class="container">
+        <div class="header-section">
+            <h3>{{ title }}</h3>
+        </div>
+        <form action=" {{ action }}" method="post">
+            <table class="form-table">
+                <tbody>
+                    {% for data in datas %}
+                    <tr>
+                        <td class='form-label'>{{ data[0] }}</td>
+                        <td>{{ data[1]|safe }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% for key, value in args.items() %}
+            <input type='hidden' name='{{key}}' id='{{key}}' value='{{value}}'>
+            {% endfor %}
+            <div class="button-group">
+                <input type='reset'  value='重設' class="red-button">
+                <input type='submit' value='確認' class="blue-button">
+            </div>
+            
+        </form>
+
+    </div>
+</body>
+{% include 'common/footer.html' %}

@@ -13,6 +13,16 @@ def index():
         directories = []
     return render_template('index.html',datas=directories)
 
+@root_bp.route('/blog/<int:year>/<place>', methods=['GET'])
+def blog_place(year:int, place):
+    _p = Path(current.config.get('blog/path'))
+    _p = _p.joinpath(f'{year}',place)
+    img_index = int(request.args.get('index',-1))
+    imgs = [_ for _ in _p.iterdir() if _.suffix[1:] in ('jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG', 'gif', 'GIF', 'bmp', 'svg', 'webp', 'avif', 'tiff')]
+    now = f"{year}/{place}"
+
+    return render_template('travel/blog.html',place=place, img_index=img_index, imgs=imgs, year=year, now=now)
+
 @root_bp.route('/home', methods=['GET'])
 @login_required
 def home():
@@ -20,9 +30,7 @@ def home():
 
 @root_bp.route('/show/<path:filepath>')
 def show_image(filepath):
-    suffixs = ('jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG', 'gif', 'GIF', 'bmp', 'svg', 'webp', 'avif', 'tiff')
     path = Path(filepath)
-    assert path.suffix[1:] in suffixs
     return send_from_directory(path.parent, path.name)
 
 @root_bp.route("/db", methods=['GET'])

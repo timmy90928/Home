@@ -1,12 +1,13 @@
 from datetime import timedelta,datetime,timedelta
 from shutil import copy2, rmtree, ignore_patterns, copytree
-from os import environ,mkdir
+from os import environ,mkdir, name as osname
 from os.path import isfile, isdir, split as path_split,join, abspath, exists
 from base64 import b64encode,b64decode
 from urllib.parse import quote, unquote
 from typing import Any, Union, Optional, Callable
 import math
 from hashlib import sha3_256
+from pathlib import WindowsPath, PosixPath, Path as _Path
 from json import load, dump
 from pystray import MenuItem, Icon as _icon, Menu as StrayMenu
 from PIL import Image
@@ -60,13 +61,20 @@ class json:
     ...
     def __call__(self, key:str, value = None):
         keys = key.split('/')
-        if value: 
+        if value is not None: 
+            if value == "null": value = None
+            if value in ["True", "true"]: value = True
+            if value in ["False", "false"]: value = False
             result = self._set(keys, value)
             self.dump(result)
             return result
         else:
             return self._get(keys)
-
+    def __getitem__(self, key):
+        return self.__call__(key, value = None)
+    def __setitem__(self, key, value):
+        return self.__call__(key, value)
+    
     def get(self, key:str, default = None):
         keys = key.split('/')
         try:
@@ -79,10 +87,16 @@ class json:
     def _set(self, keys:list, value:Any) -> dict:
         temp =  self.load().copy()
         _ = "temp"
-        for k in keys:
+        for i, k in enumerate(keys):
             if k == '': continue
             _ += f"['{k}']"
-        exec(f"{_} = value")
+
+            if i == len(keys) - 1:
+                exec(f"{_} = value")
+            else:
+                if k not in temp:
+                    exec(f"{_} = {{}}")
+
         return temp
         
     def _get(self, keys:list) -> Any:
@@ -102,6 +116,26 @@ class json:
             dump(data, f, ensure_ascii=False, indent=4)
         return True
 
+    def delete(self, key:str) -> bool:
+        keys = key.split('/')
+        data = self.load()
+        
+        # Traversing through the keys
+        temp = data
+        for k in keys[:-1]:  # Get to the parent of the key to delete
+            if k in temp:
+                temp = temp[k]
+            else:
+                return False  # If the key doesn't exist, return False
+        
+        # Deleting the key
+        if keys[-1] in temp:
+            del temp[keys[-1]]
+            self.dump(data)  # Save the updated data back to the file
+            return True
+        else:
+            return False
+        
 from time import sleep
 class SysTray(_icon):
     """
@@ -237,10 +271,15 @@ def copy(src:str, dst:str, ignore:list = [], return_format:str = '{mode}: {src} 
     except OSError as e:
         raise OSError(f"Error copying file from {src} to {dst}: {e}") from e
 
-class Path:
+#// https://stackoverflow.com/questions/61689391/error-with-simple-subclassing-of-pathlib-path-no-flavour-attribute
+class Path(type(_Path()), _Path):
+    def __new__(cls, *args, **kwargs):
+        return super().__new__(cls, *args, **kwargs)
+    
     def __init__(self, path: str):
         self.path = path
         self.exist = exists(path)
+
     @property
     def abspath(self):
         return abspath(self.path)
@@ -250,8 +289,7 @@ class Path:
     @property
     def file(self):
         return path_split(self.path)[-1]
-    def __str__(self):
-        return self.path
+
     def get(self, *path):
         return join(self.path, *path)
     
@@ -270,7 +308,11 @@ def get_data_path(dir_name:str, copy_dir_or_file:list = [], root_dir:str = None)
     """
     Return the path to the directory for storing application data, or a tuple of a boolean and the path.
     
-    >>> exists,program_data_path = get_data_path('Intel')
+    >>> p = get_data_path('Intel')
+    >>> p.exist
+    True
+    >>> p.type
+    'dir'
 
     :param dir_name: The name of the directory to create.
     :param copy_dir_or_file: A list of files/directories to copy into the created directory.
@@ -290,13 +332,9 @@ def get_data_path(dir_name:str, copy_dir_or_file:list = [], root_dir:str = None)
         for dir_or_file in copy_dir_or_file:
             dir_or_file = join(root_dir, dir_or_file) if root_dir else dir_or_file
             copy(dir_or_file, program_data_path)
-        _p = Path(program_data_path)
-        _p.exist = False
-        return _p
+        return Path(program_data_path)
     else:
-        _p = Path(program_data_path)
-        _p.exist = True
-        return _p
+        return Path(program_data_path)
     
 class base64:
     """
@@ -360,6 +398,43 @@ def errorCallback(errorCallback:Optional[Callable[[str],Any]]=None, *errorCallba
                     print(e)
         return wrap
     return decorator
+
+def list2str(_list:list):
+    """
+    >>> list2str([1,2,3])
+    '1,2,3'
+    """
+    return ",".join([str(i) for i in _list])
+
+def none2precent(obj:object):
+    """
+    The original object if it is truthy, otherwise "%".
+
+    Examples:
+        >>> none2precent(5)
+        5
+        >>> none2precent(0)
+        '%'
+        >>> none2precent(None)
+        '%'
+    """
+    return obj if obj else "%"
+
+def ifelse(_if:object, _else:object):
+    """
+    If _if is truthy, return _if; otherwise, return _else.
+
+    Examples:
+        >>> ifelse(1, 0)
+        1
+        >>> ifelse(0, 1)
+        1
+        >>> ifelse('', 'foo')
+        'foo'
+        >>> ifelse('bar', '')
+        'bar'
+    """
+    return _if if _if else _else
 
 if __name__ == '__main__':
     import doctest

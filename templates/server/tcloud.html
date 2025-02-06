@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<head>
+    <title>tcloud</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='common.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='upload.css') }}">
+</head>
+{% include 'common/header.html' %}
+<body>
+    <div class="header-section">
+        <form method="POST" enctype="multipart/form-data" action="/tcloud/upload?path={{now_path}}">
+            <label for="file-upload" class="file-upload-label">選擇檔案</label>
+            <input id="file-upload" type="file" name="file[]" multiple="multiple">
+            <input type="submit" value="上傳">
+        </form>
+        <h3 class="second-title">{{now_path}}</h3>
+        <div>
+            <a class="blue-button" href="{{ input('建立資料夾', '/tcloud/mkdir?path='~now_path, {'資料夾名稱': 'dirname'}) }}">建立資料夾</a>
+            <a class="blue-button" href="/tcloud/ppage?path={{now_path}}">上一頁</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="header-section">
+            <h3 class="second-title">資料夾</h3>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>資料夾名稱</th>
+                    <th>上次存取時間</th>
+                    <th>上次修改時間</th>
+                    <th>建立時間</th>
+                    <th></th>
+                    <!-- <th></th> -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for file in dirlists %}
+                    <tr>
+                        <td>{{ file[1]|safe }}</td>
+                        <td>{{ file[2] }}</td>
+                        <td>{{ file[3] }}</td>
+                        <td>{{ file[4] }}</td>
+                        <td><a href="/tcloud/download/{{now_path}}/{{file[0]}}" >下載</a> \ <a href="/confirm/確定要刪除 {{file[0]}} 嗎?to=/tcloud/delete/{{now_path}}/{{file[0]}}" >刪除</a></td>
+                        <!-- <td><a href="/confirm/確定要刪除這個檔案嗎?to=/tcloud/delete/{{file[0]}}" >刪除</a></td> -->
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="7" style="text-align: center;">無資料夾</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="header-section">
+            <h3 class="second-title">檔案</h3>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>檔案名稱</th>
+                    <th>檔案大小</th>
+                    <th>上次存取時間</th>
+                    <th>上次修改時間</th>
+                    <th>建立時間</th>
+                    <th></th>
+                    <!-- <th></th> -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for file in filelists %}
+                    <tr>
+                        <td>{{ file[1]|safe }}</td>
+                        <td>{{ file[2] }}</td>
+                        <td>{{ file[3] }}</td>
+                        <td>{{ file[4] }}</td>
+                        <td>{{ file[5] }}</td>
+                        <td><a href="/tcloud/download/{{now_path}}/{{file[0]}}" >下載</a> / <a href="/confirm/確定要刪除 {{file[0]}} 嗎?to=/tcloud/delete/{{now_path}}/{{file[0]}}" >刪除</a></td>
+                        <!-- <td><a href="/confirm/確定要刪除這個檔案嗎?to=/server/cloud/delete/{{file[0]}}" >刪除</a></td> -->
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="7" style="text-align: center;">無檔案</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <script>
+        document.querySelectorAll('.delete-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                if (!confirm('確定要刪除這個檔案嗎？')) {
+                    e.preventDefault();
+                }
+            });
+        });
+
+        // 顯示選擇的檔案名稱
+        document.getElementById('file-upload').addEventListener('change', function(e) {
+            var fileName = e.target.files[0] ? e.target.files[0].name : '選擇檔案';
+            document.querySelector('.file-upload-label').textContent = fileName;
+        });
+    </script>
+</body>
+{% include 'common/footer.html' %}

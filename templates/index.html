@@ -1,28 +1,90 @@
-<!DOCTYPE html>
-<head>
-    <title>Home</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='common.css') }}">
-</head>
-{% include 'common/header.html' %}
-<body>
-    <div class="header-section">
-        <div></div>
-        <div>首頁</div>
-        <div>關於我</div>
-    </div>
-    <div class="container">
-        {% for data in datas %}{% if data.split(".")[1] in  ('jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG', 'gif', 'GIF', 'bmp', 'svg', 'webp', 'avif', 'tiff')%}
-        <div class="header-section">
-            <h3>{{ data.split(".")[0] }}</h3>
-        </div>
-        <img src="/writable/{{ data }}" style="height: auto; width: 100%;"/>
+{% extends "common/base.html" %}
 
-        {% endif %}{% endfor %}
-    </div>
+{% block title %}Home{% endblock %}
+
+{% block head %}
+{{ super() }}
+{% endblock %}
+
+{% block top %}
+<style>
+    h3 {
+        background-color: #024991;
+        color: white;
+        text-align: center;
+        padding: 25px 0;
+
+        display: flex;
+        align-items: center; /* 垂直置中 */
+        justify-content: center; /* 水平置中 */
+    }
+    .panel-icons {
+            display: flex; /* 使用 flexbox */
+            flex-wrap: wrap; /* 允許換行 */
+            gap: 20px; /* 增加圖示之間的間距 */
+        }
+    .panel-icon {
+        display: flex;
+        align-items: center;
+        background-color: #fff; /* 白色背景 */
+        border-radius: 8px; /* 圓角 */
+        padding: 0px;
+        margin: 0 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 陰影效果 */
+        transition: transform 0.3s, box-shadow 0.3s; /* 動畫效果 */
+        width: 140px;  
+        height: 130px;
+        align-items: center; /* 垂直置中 */
+        justify-content: center; /* 水平置中 */
+        text-align: center;
+    }
+    .panel-icon:hover {
+        transform: translateY(-2px); /* 懸停效果 */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+    .my-icons {
+        width: 116px;  /* 圖示寬度 */
+        height: 87px; /* 圖示高度 */
+        margin: 0;
+    }
+    ul p {
+        margin: 0; /* 去掉段落的預設邊距 */
+        color: #333; /* 文字顏色 */
+    }
+    a {
         
-    
+        text-decoration: none;
+        align-items: center; /* 垂直置中 */
+        justify-content: center; /* 水平置中 */
+    }
+</style>
+{% endblock %}
 
-</body>
-{% include 'common/footer.html' %}
-</html>
+{% block body %}
+<div class="header-section">
+    <div></div>
+    <h3></h3>
+    <div></div>
+</div>
+<div class="container">
+    {% for data in datas %}
+    <h3>{{ data.name }}</h3>
+    <ul class="panel-icons">
+        {% for place in data.iterdir() %}  
+            <li class="panel-icon">
+                <a href="/blog/{{ data.name }}/{{ place.name }}">
+                    <img src="/show/{{ place }}/{{ current.config.get('blog/logo','logo.JPG') }}" alt={{place.name}} class="my-icons" />
+                    <p>{{ place.name[current.config.get('blog/delcount',0)|int:] }}</p>
+                </a>
+            </li>
+        {% endfor %}
+    <!-- <img src="/writable/{{ data }}" style="height: auto; width: 100%;"/> -->
+
+    </ul>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block bottom %}
+{% endblock %}
 

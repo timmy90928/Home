@@ -4,6 +4,8 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='common.css') }}">
 </head>
 {% include 'common/header.html' %}
+{% import 'common/macro.jinja' as lib %}
+{{ lib.confirm_dialog() }} 
 <body>
     {% if title == "搜尋" %}
     <form action="/accounting/search" method="POST">
@@ -151,7 +153,7 @@
                             <td>{{ data|safe }}</td>
                         {% endfor %}
                         <td><a href="/accounting/edit/data/{{data_list[0]}}" class="small-blue-button">編輯</a></td>
-                        <td><a href="/accounting/database/delete/{{data_list[0]}}" class="small-red-button" name="{{data_list[0]}}">刪除</a></td>
+                        <td><a class="small-red-button" name="{{data_list[0]}}" onclick="Confirm('是否確定刪除{{data_list[0]}}','/accounting/database/delete/{{data_list[0]}}')">刪除</a></td>
                     </tr>
                 {% endfor %}
             </tbody>
@@ -166,7 +168,7 @@
     document.addEventListener('DOMContentLoaded', () => { 
         const acc = new accounting(document);
         acc.DynamicSelect();
-        confirm_delete('.small-red-button');
+        // confirm_delete('.small-red-button');
     })
 </script>
 {% else %}
@@ -174,7 +176,7 @@
     document.addEventListener('DOMContentLoaded', () => { 
         date = document.getElementById('Date');
         date.value = "{{ month }}";
-        confirm_delete('.small-red-button');
+        // confirm_delete('.small-red-button');
     })
 </script>
 {% endif %}

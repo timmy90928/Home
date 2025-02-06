@@ -1,0 +1,57 @@
+{# Extention: wholroyd - Jinja
+    {% import 'common/macro.jinja' as lib %} 
+#}
+{% macro list(heads, datas) %}
+    {#? {{ lib.list(heads, datas) }} #}
+    <table>
+            <thead>
+                <tr>
+                    {% for head in heads %}
+                        <th>{{ head }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for data_list in datas %}
+                    <tr>
+                        {% for data in data_list %}
+                            <td>{{ data|safe }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+{% endmacro %}
+
+{% macro datalist(id, datas, index) %}
+    {#? {{ lib.datalist("id", datas, 0) }} #}
+    <datalist id="{{id}}">
+    {% for data in datas %}
+        <option value="{{data[index]}}"/>
+    {% endfor %}
+    </datalist>
+{% endmacro %}
+
+{% macro confirm_dialog() %}
+    <script>
+        // 根據傳入的 id 生成不同的 confirm 事件處理函數
+        function Confirm(message, url) {
+            if (confirm(message)) {
+                window.location.href = url;
+                // window.location.replace('{{url}}');
+            }else{
+                
+                // window.history.back();
+            }
+        }
+    </script>
+{% endmacro %}
+
+{% macro test() %}
+<script>
+    // var a = "{{ current.config('ie_class') | safe | tojson }}";
+    // console.log(a);
+    var category = {{ current.config('ie_class') | tojson }};
+    console.log(category);
+</script>
+{% endmacro %}

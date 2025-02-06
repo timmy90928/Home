@@ -54,8 +54,9 @@ function dictionaryToArrayOfObjects(dictionary) {
  * @param {array} option_array The array of options to add to the select element.
  * @param {string} defaultOptionText The text for the default option.
  * @param {boolean} otherOp Whether to include an "other" option.
+ * @param {boolean} defaultOp_disabled Whether to disable the default option.
  */
-function select_option(id, option_array, defaultOptionText, otherOp) {
+function select_option(id, option_array, defaultOptionText, otherOp, defaultOp_disabled=true) {
     var select = document.getElementById(id);
     // Clear old options.
     select.innerHTML = '';
@@ -63,7 +64,7 @@ function select_option(id, option_array, defaultOptionText, otherOp) {
     // Add a default "Please select a category" option.
     const defaultOption = document.createElement('option');
     defaultOption.value = '';
-    defaultOption.disabled = true;
+    defaultOption.disabled = defaultOp_disabled;
     defaultOption.selected = true;
     defaultOption.textContent = defaultOptionText;
     select.appendChild(defaultOption);
@@ -130,7 +131,7 @@ class accounting {
      */
     default(datas) {
         const datas_list = datas.replace('(', '').replace(')', '').replace(/'/g,'').replace(/\//g,'-').split(', ');
-        console.log(datas_list);
+        // console.log('{{ site_header_title }}');
         this.date.value = datas_list[1];
         if (datas_list[2] === '支出') {
             this.e_selects.checked = true;
@@ -138,9 +139,9 @@ class accounting {
             this.i_selects.checked = true;
         };
 
-        select_option('Category', [],datas_list[3]);
+        select_option('Category', [],datas_list[3], false, false);
         this.detail_select.value = datas_list[4];
-        select_option('Detail', [],datas_list[4]);
+        select_option('Detail', [],datas_list[4], false, false);
         this.amount.value = datas_list[5];
         this.note.value = datas_list[6];
     }

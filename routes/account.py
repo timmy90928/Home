@@ -7,14 +7,16 @@ db = current.db
 
 # https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/autocomplete
 account_bp = Blueprint('account', __name__, url_prefix='/account')
-HEADS = ['流水號', '帳號', '名稱', '權限']
+HEADS = ['流水號', '帳號', '名稱', '權限', "刪除"]
 HEADS_SQL = "id,username,name,role"
 
 @account_bp.route('/')
 @login_required
 def index():
     if current_user.rolenum > 1:  return redirect('/error/role/1')
-    return render_template('account/manager.html', datas = db.get_col('account', HEADS_SQL), heads = HEADS)
+    datas = db.get_col('account', HEADS_SQL)
+    datas = [add_small_button(i, username, name, role, red=[f'是否確定要刪除 {username} (ID={i})',f'/account/database/delete/{i}']) for i, username, name, role in datas]
+    return render_template('account/manager.html', datas = datas, heads = HEADS)
 
 @account_bp.route('/edit/<id>', methods=['GET', 'POST'])
 def edit(id):

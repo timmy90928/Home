@@ -1,0 +1,32 @@
+{% extends "common/base.html" %}
+{% import 'common/macro.jinja' as lib %}
+
+{% block title %}紀錄{% endblock %}
+
+{% block head %}
+{{ super() }}
+{% endblock %}
+
+{% block top %}
+{% endblock %}
+
+{% block body %}
+    <div class="header-section">
+        {% if event %}
+        <a class="small-blue-button"  href="/record">返回</a>
+        {% set event = "("~event~")" %}
+        {% else %}
+        <div></div>
+        {% endif %}
+
+        <h3>紀錄{{ event }}</h3>
+
+        <a class="small-blue-button" href="/record/add">新增</a>
+    </div>
+    <div class="container">
+        {{ lib.list(heads, datas) }}
+    </div>
+{% endblock %}
+
+{% block bottom %}
+{% endblock %}

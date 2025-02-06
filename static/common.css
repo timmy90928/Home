@@ -1,8 +1,16 @@
 
 /* header */
 header {
-    margin: 0; 
-    width: 100%;
+    /* margin: 0; 
+    width: 100%; */
+    position: fixed; /* 固定在頁面最上面 */
+    top: 0; /* 垂直置頂 */
+    left: 0; /* 水平置左 */
+    width: 100%; /* 讓 header 寬度佔滿整個視窗 */
+    background-color: white; /* 設定背景顏色，防止透明度問題 */
+    z-index: 1000; /* 保證 header 在最上層 */
+    padding: 10px 0; /* 設定上下內邊距 */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 可以加入陰影讓 header 更顯眼 */
 }
 header, header div, header a {
     background-color: #024991;
@@ -47,6 +55,7 @@ body {
     background-color: #e9ecef;
     margin: 0;
     padding: 0;
+    margin-top: 100px; /* 根據 header 高度調整 */
 }
 
 /* container */
@@ -88,6 +97,8 @@ tr:hover {
     justify-content: space-between;
     align-items: center;
     margin-top: 20px;
+    margin-left: 20px;
+    margin-right: 20px;
     position: relative;
     padding: 20px;
 }
@@ -115,6 +126,7 @@ tr:hover {
     min-width: 120px;
     max-width: 200px;
     text-decoration: none;
+    text-align: center;
 }
 @media (max-width: 769px) {
     .blue-button, .red-button {
@@ -225,6 +237,7 @@ tr:hover {
 }
 /*  */
 .center {
+    white-space: nowrap;
     display: flex;
     justify-content: center;
     align-items: center;

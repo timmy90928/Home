@@ -1,0 +1,58 @@
+{% extends "common/base.html" %}
+
+{% block title %}設定{% endblock %}
+
+{% block head %}
+{{ super() }}
+{% endblock %}
+
+{% block top %}
+<style>
+    .json-box {
+        width: 100%;
+        padding: 20px;
+        background-color: #f4f4f4;
+        overflow: auto;
+        box-sizing: border-box;
+        border: 1px solid #ddd;
+        white-space: pre-wrap;  /* 保留換行 */
+        word-wrap: break-word;  /* 防止長字串超出格子 */
+        font-family: monospace;
+        color: #333;
+      }
+      input[type="text"] {
+        width: 60%;
+      }
+  </style>
+{% endblock %}
+
+{% block body %}
+    <div class="header-section">
+        <h3>設定</h3>
+    </div>
+    <div class="notice">※Value完全按照成程式碼, 因此若輸入字串請使用"". Example: [10, "10"]</div>
+    <div class="json-box">
+        {{ cfg | safe }}
+    </div>
+    <div class="center">
+        <form action="/server/setting" method="POST">
+            <a> 設定 </a>
+            <input type="text" id="_from" name="_from" placeholder="config/path">
+            <a> 為 </a>
+            <input type="text" id="_to" name="_to" list="_to_list" placeholder="value1,value2">
+            <datalist id="_to_list">
+                <option value="true"></option>
+                <option value="false"></option>
+                <option value="null"></option>
+                <option value="delete"></option>
+            </datalist>
+            <input type='submit' value='修改' >
+            <input type='reset'  value='重設' >
+        </form>
+    </div>
+   
+ 
+{% endblock %}
+
+{% block bottom %}
+{% endblock %}

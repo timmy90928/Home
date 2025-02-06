@@ -1,46 +1,29 @@
-<!DOCTYPE html>
-<head>
-    <title>帳號管理</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='common.css') }}">
-</head>
-{% include 'common/header.html' %}
-<body>
-    
-    <div class="container">
-        <div class="header-section">
-            <div></div>
-            <h3>帳號管理</h3>
-            <a onclick="input_username()" class="small-blue-button">新增</a>
-        </div>
-        <table>
-            <thead>
-                <tr>
-                    {% for head in heads %}
-                        <th>{{ head }}</th>
-                    {% endfor %}
-                    <th>刪除</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for data_list in datas %}
-                    <tr>
-                        {% for data in data_list %}
-                            <td>{{ data|safe }}</td>
-                        {% endfor %}
-                        <td><a href="/account/database/delete/{{data_list[0]}}" class="small-red-button" name="{{data_list[0]}}">刪除</a></td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</body>
-{% include 'common/footer.html' %}
+{% extends "common/base.html" %}
 
+{% block title %}帳號管理{% endblock %}
+
+{% block head %}
+{{ super() }}
+{% endblock %}
+
+{% block top %}
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="header-section">
+        <div></div>
+        <h3>帳號管理</h3>
+        <a onclick="input_username()" class="small-blue-button">新增</a>
+    </div>
+    {{ lib.list(heads, datas) }}
+</div>
+{% endblock %}
+
+{% block bottom %}
 <script src="{{ url_for('static', filename='utils.js') }}"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', () => { 
-        confirm_delete('.small-red-button');
-    })
+
     function input_username() {
         var username = prompt('請輸入帳號名稱與權限[2,3](用空格分開):', 'admin 0');
         if (username == null || "") {
@@ -57,3 +40,6 @@
         }
     }
 </script>
+{% endblock %}
+
+
