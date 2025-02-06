@@ -1,8 +1,25 @@
 # https://blog.csdn.net/qq_42265220/article/details/120670267
+# https://www.maxlist.xyz/2019/10/30/flask-sqlalchemy/
 #? strftime('%Y-%m-%d', timestamp, 'unixepoch','localtime')
+
+"""
+
+## Migrate
+### init
+set FLASK_APP=server_run.py
+flask db init
+
+### 後續
+- 將資料庫的`alembic_version`表刪除
+- 將`migrations/versions`資料夾內的檔案刪除
+
+"""
 from flask import Flask
-from utils.utils import timestamp as _timestamp
+from utils.utils import timestamp as _timestamp, now_time
 from flask_sqlalchemy import SQLAlchemy as _SQLAlchemy, model
+from alembic.config import Config as _AlembicConfig
+from alembic import command as _AlembicCommand
+from flask_migrate import Migrate
 from sqlalchemy import Column, Integer, String, Date, Float, ForeignKey, Text, desc
 from utils.utils import hash
 class SQLAlchemy(_SQLAlchemy):
@@ -39,7 +56,7 @@ class SQLAlchemy(_SQLAlchemy):
         self, 
         _type, 
         *,
-        nullable=False, 
+        nullable=True, 
         primary_key=False, 
         autoincrement=False, 
         unique=False, 
@@ -62,9 +79,9 @@ class SQLAlchemy(_SQLAlchemy):
     @property
     def pk(self):
         """```
-        >>> db.Column(db.Integer, unique=True, nullable=True, autoincrement=True, primary_key=True)
+        >>> db.Column(db.Integer, unique=True, nullable=False, autoincrement=True, primary_key=True)
         ```"""
-        return self.Column(db.Integer, unique=True, nullable=True, autoincrement=True, primary_key=True)
+        return self.Column(db.Integer, unique=True, nullable=False, autoincrement=True, primary_key=True)
     
     def add(self, instance:model.Model, commit:bool = True):
         # assert self.Model in instance, 'Model not found.'
@@ -77,16 +94,34 @@ class SQLAlchemy(_SQLAlchemy):
     def close(self) -> None:
         self.session.close()
 
+
 db = SQLAlchemy()
-# db.create_all()
+
+def initDB(app:Flask, create_all:bool = True):
+    global db
+    db.init_app(app)
+    migrate = Migrate()
+    migrate.init_app(app, db)
+    alembic_cfg = _AlembicConfig("migrations/alembic.ini")
+    alembic_cfg.set_main_option("sqlalchemy.url", app.config['SQLALCHEMY_DATABASE_URI'])
+    alembic_cfg.set_main_option("script_location", "migrations")
+    
+    
+    ###* APP Context ###
+    with app.app_context():
+        if create_all:
+            db.create_all()
+            _AlembicCommand.revision(alembic_cfg, message=f"Update from {now_time()}", autogenerate=True) # 設定遷移訊息
+            _AlembicCommand.upgrade(alembic_cfg, "head") # 執行升級（將變更應用到資料庫）
+            
 
 class User(db.Model):
     __tablename__ = 'account'
     id = db.pk
-    username = db.Column(db.Text, nullable=True, unique=True)
-    password = db.Column(db.Text, nullable=False)
-    name = db.Column(db.Text, nullable=False)
-    role = db.Column(db.Text, nullable=False, default='user')
+    username = db.Column(db.Text, nullable=False, unique=True)
+    password = db.Column(db.Text)
+    name = db.Column(db.Text)
+    role = db.Column(db.Text,nullable=False,  default='user')
 
     def __init__(self, username, password, name, role):
         self.username = username
@@ -108,11 +143,12 @@ class User(db.Model):
         return '<User %r>' % self.username
     
 class Record(db.Model):
+    __tablename__ = 'Record'
     id = db.pk
-    event = db.Column(db.Text, nullable=True)
-    timestamp = db.Column(db.Integer, nullable=False)
-    interval = db.Column(db.Integer, nullable=False)
-    note = db.Column(db.Text, nullable=True)
+    event = db.Column(db.Text, nullable=False)
+    timestamp = db.Column(db.Integer)
+    interval = db.Column(db.Integer)
+    note = db.Column(db.Text)
 
     def __init__(self, event, time:str, note):
         _now_timestamp = int(_timestamp(string=time))
@@ -126,3 +162,26 @@ class Record(db.Model):
         return self.interval / 86400
     def __repr__(self):
         return '<Record %r>' % self.event
+class Accounting(db.Model):
+    __tablename__ = 'Accounting'
+    id = db.pk
+    Datestamp = db.Column(db.Text)
+    ie = db.Column(db.Text, nullable=False)
+    Amount = db.Column(db.Text, nullable=False)
+    Category = db.Column(db.Text, nullable=False)
+    Detail = db.Column(db.Text)
+    note = db.Column(db.Text, default='')
+    link = db.Column(db.Text, default='')
+    Creatdate = db.Column(db.Text, default=now_time())
+
+class Travel(db.Model):
+    __tablename__ = 'travel'
+    id = db.pk
+    name = db.Column(db.Text)
+    datestamp = db.Column(db.Text)
+    place = db.Column(db.Text)
+    people = db.Column(db.Text)
+    note = db.Column(db.Text, default='')
+    position = db.Column(db.Text)
+    # link = db.Column(db.Text)
+

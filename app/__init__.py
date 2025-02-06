@@ -4,7 +4,7 @@ from .config import APPNAME
 from .config import DATAPATH
 from .admin import initAdmin
 from .admin import Admin as FlaskAdmin
-from .model import db
+from .model import initDB
 
 ###* Global Variable ###
 from utils.g import clients
@@ -37,7 +37,7 @@ current.config = json(DATAPATH.get('writable', 'config.json'))
 #! SECRET_KEY & VERSION
 APP.secret_key = '62940eecccdf094995b09e1191b6e0afdcba8ee3293a5c893e146d0a5cf43210' # home-by-timmy90928
 APP.config['UPLOAD_FOLDER'] = DATAPATH.get('writable') # Define the address of the upload folder.
-APP.config['tcloud'] = current.config.get('base/tcloud', "./")
+APP.config['tcloud'] = current.config.get('base/tcloud', "../")
 APP.config['VERSION'] = 'v1.0.0-beta.5'  # __version__ = ".".join(("0", "6", "3"))
 
 ###* Login Manager ###
@@ -68,7 +68,6 @@ def track_connection() -> None:
 
     ip = request.remote_addr
     clients[ip] = time()
-    db.create_all()
 
 @APP.after_request
 def log_status_code(response:Response):
@@ -122,12 +121,13 @@ def create_app(config_name:Literal['development', 'production'] = 'development')
     ###* Configurations ###
     APP.config.from_object(configs[config_name])
     babel = Babel(APP, locale_selector=get_locale)
-
+    version_update = not bool(current.config.get("server/VERSION") == APP.config['VERSION'])
+    # print(version_update)
     current.log = set_file_handler(APP, DATAPATH.get('log', f"log-{APP.config['VERSION']}")) # Logger
     current.db = database(APP.config['DATABASE_URI'])
     
     ###* Init Tools ###
-    db.init_app(APP)    # Database (SQLAlchemy)
+    initDB(APP)         # Database (SQLAlchemy)
     initJinjaFunc(APP)  # Jinja2
     initAdmin(APP)      # Admin View
 
