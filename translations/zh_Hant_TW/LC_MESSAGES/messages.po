@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-02-05 17:15+0800\n"
+"POT-Creation-Date: 2025-02-06 13:14+0800\n"
 "PO-Revision-Date: 2025-02-05 10:18+0800\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh_Hant_TW\n"
@@ -18,12 +18,16 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.16.0\n"
 
-#: templates/common/base.html:68
+#: templates/common/base.html:67
 #, python-format
 msgid "%(name)s's home management system"
 msgstr "%(name)s的家庭管理系統"
 
-#: templates/common/base.html:73
+#: templates/common/base.html:72
 msgid "Logout"
 msgstr "登出"
+
+#: templates/travel/blog.html:62 templates/travel/blog.html:66
+msgid "back"
+msgstr "返回"
 
