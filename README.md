@@ -10,8 +10,23 @@ Develop
 pip install -r requirements.txt
 ```
 
+### I18n
+```bash
+pybabel compile -d translations
+```
+
+### Migrate
+```bash
+set FLASK_APP=server_run.py
+flask db init
+```
+
 ### Run from sources
 Run `server_run.py`
+```bash
+# Run the server in the background (only works on Windows).
+pythonw server_run.py   
+```
 
 ### Make
 Run `make.bat`. ([tutorial](./docs/build.md))

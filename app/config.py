@@ -1,11 +1,13 @@
 from utils.utils import now_time as _now_time
 from utils.utils import get_data_path as _get_data_path
+from utils.utils import Path as _Path
 
 APPNAME = 'Home'
 DATAPATH = _get_data_path(APPNAME,['writable', 'log']) #? root_dir = getcwd()
 
 def _create_sqlite_uri(abspath) -> str:
     return 'sqlite:///' + abspath
+
 class BaseConfig:
     TITLE = APPNAME
     DESCRIPTION = 'Home management system'
@@ -22,7 +24,7 @@ class BaseConfig:
 
 class DevelopmentConfig(BaseConfig):
     DEBUG = True
-    DATABASE_URI = r'C:\timmy\Program\Home\writable\home.db'
+    DATABASE_URI = str(_Path("./").joinpath('writable', "home.db").absolute())
     SQLALCHEMY_DATABASE_URI = _create_sqlite_uri(DATABASE_URI)
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
