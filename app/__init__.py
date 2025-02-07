@@ -63,7 +63,8 @@ def inject_global_vars():
 def track_connection() -> None:
     """Tracks all the current clients (by IP) and stores them in the set clients."""
     ###* i18n ###
-    session['lang'] = session['lang']  if session['lang']  else request.accept_languages.best_match(APP.config['LANGUAGES'])
+    if "lang" not in session:
+        session['lang'] = request.accept_languages.best_match(APP.config['LANGUAGES'])
 
     ip = request.remote_addr
     clients[ip] = time()

@@ -19,8 +19,8 @@ class BaseConfig:
     SERVER_RUN_TIME  = _now_time()
     MAX_CONTENT_LENGTH = 1024 * 1024 * 1024 # Set the maximum upload file size to 1024MB (1GB).
 
-    LANGUAGES = ['zh_Hant_TW', 'en']
-    BABEL_DEFAULT_LOCALE = 'zh_Hant_TW'
+    LANGUAGES = ['zh_TW', 'en']
+    BABEL_DEFAULT_LOCALE = 'en'
 
 class DevelopmentConfig(BaseConfig):
     DEBUG = True
