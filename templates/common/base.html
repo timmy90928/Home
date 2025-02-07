@@ -64,7 +64,14 @@
     <header>
         <div><!-- left -->
             <img src="{{ url_for('static', filename='picture/house.ico') }}" alt="圖示" class="icon">
-            <h2 class="to-home">{{ _("%(name)s's home management system", name=site_header_title)}}</h2>
+            {% if request.path == '/' or "blog" in request.path%}
+                {% set _title =  _("%(name)s's Blog", name=site_header_title) %}
+                {% if request.path == '/'%}{% set _icon_link =  "/home" %}{% else %}{% set _icon_link =  "/" %}{% endif %}
+            {% else %}
+                {% set _title =  _("%(name)s's Home Management System", name=site_header_title) %}
+                {% if request.path == '/home'%}{% set _icon_link =  "/" %}{% else %}{% set _icon_link =  "/home" %}{% endif %}
+            {% endif %}
+            <h2 class="to-home">{{ _title}}</h2>
         </div>
         <div><!-- right -->
             {% if login_user_name %}
@@ -72,9 +79,8 @@
             <a href="/account/logout">{{ _("Logout")}}</a>
             <a class="mr"> ) </a>
             {% else %}
-            <a href="/account/login" class="mr">登入</a>
+            <a href="/account/login" class="mr">{{ _("Login")}}</a>
             {% endif %}
-
         </div>
 
     </header>
@@ -85,14 +91,28 @@
     </body>
 
     <footer>
+        <div></div>
         <p>{{ config['COPYRIGHT'] }}</p>
+        <div>
+            <form action="/setlang" method="POST">
+                <select name="lang" onchange="this.form.submit()">
+                    {% for lang in config['LANGUAGES'] %}
+                        {% set now_lang = (lang == session['lang']) %}
+                        <option value="{{ lang }}" {% if now_lang %}selected{% endif %}>
+                            {{ lang }}  
+                        </option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+        
     </footer>
 </html>
 
 <script>
     document.querySelectorAll('.icon').forEach(link => {
         link.addEventListener('click', function(e) {
-            window.location.href = '/home';
+            window.location.href = '{{ _icon_link}}';
         });
     });
 

@@ -8,10 +8,20 @@ def index():
     _p = current.config.get('blog/path')
     if _p:
         path = Path(_p)
-        directories = [item for item in path.iterdir() if item.is_dir()]
+        directories = [item.name for item in path.iterdir() if item.is_dir()]
+        numeric_data = [int(item) for item in directories if item.isdigit()]
     else:
-        directories = []
-    return render_template('index.html',datas=directories)
+        abort(500, response=gettext("Blog path not set."))
+
+    return render_template('index.html',max_year=max(numeric_data), min_year=min(numeric_data))
+
+@root_bp.route('/blog/<int:year>', methods=['GET'])
+def blog_year(year):
+    _p = current.config.get('blog/path')
+    path = Path(_p).joinpath(f'{year}')
+    directories = [item for item in path.iterdir()]
+
+    return render_template('index.html',datas=directories, year=year)
 
 @root_bp.route('/blog/<int:year>/<place>', methods=['GET'])
 def blog_place(year:int, place):
@@ -91,6 +101,12 @@ def serve_validation_file(filename):
 @root_bp.route('/cause/<int:status_code>', methods=['GET'])
 def cause(status_code:int):
     abort(status_code, response="此為測試用")
+
+@root_bp.route('/setlang', methods=['GET', 'POST'])
+def setlang():
+    session['lang'] = request.form.get('lang')
+    path = request.referrer
+    return redirect(path)
 
 @root_bp.route('/input', methods=['GET', 'POST'])
 def data_input():

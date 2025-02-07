@@ -97,7 +97,7 @@ class SQLAlchemy(_SQLAlchemy):
 
 db = SQLAlchemy()
 
-def initDB(app:Flask, create_all:bool = True):
+def initDB(app:Flask, create_all:bool = False):
     global db
     db.init_app(app)
     migrate = Migrate()

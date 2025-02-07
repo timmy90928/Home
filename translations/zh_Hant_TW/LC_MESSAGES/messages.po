@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-02-06 13:14+0800\n"
+"POT-Creation-Date: 2025-02-07 14:52+0800\n"
 "PO-Revision-Date: 2025-02-05 10:18+0800\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh_Hant_TW\n"
@@ -18,16 +18,30 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.16.0\n"
 
-#: templates/common/base.html:67
+#: routes/root.py:14
+msgid "Blog path not set."
+msgstr "部落格的路徑未設定"
+
+#: templates/index.html:56 templates/travel/blog.html:61
+#: templates/travel/blog.html:73
+msgid "back"
+msgstr "返回"
+
+#: templates/common/base.html:68
 #, python-format
-msgid "%(name)s's home management system"
+msgid "%(name)s's Blog"
+msgstr "%(name)s的部落格"
+
+#: templates/common/base.html:71
+#, python-format
+msgid "%(name)s's Home Management System"
 msgstr "%(name)s的家庭管理系統"
 
-#: templates/common/base.html:72
+#: templates/common/base.html:79
 msgid "Logout"
 msgstr "登出"
 
-#: templates/travel/blog.html:62 templates/travel/blog.html:66
-msgid "back"
-msgstr "返回"
+#: templates/common/base.html:82
+msgid "Login"
+msgstr "登入"
 

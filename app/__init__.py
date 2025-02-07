@@ -63,16 +63,13 @@ def inject_global_vars():
 def track_connection() -> None:
     """Tracks all the current clients (by IP) and stores them in the set clients."""
     ###* i18n ###
-    lang = request.cookies.get('lang') if request.cookies.get('lang') else request.accept_languages.best_match(APP.config['LANGUAGES'])
-    session['lang'] = lang
+    session['lang'] = session['lang']  if session['lang']  else request.accept_languages.best_match(APP.config['LANGUAGES'])
 
     ip = request.remote_addr
     clients[ip] = time()
 
 @APP.after_request
 def log_status_code(response:Response):
-    ###* i18n ###
-    response.set_cookie('lang', session['lang'], max_age=60*60*24)
 
     ###* Logger ###
     ip = request.remote_addr
