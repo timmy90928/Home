@@ -39,7 +39,11 @@ class json:
     ```
     """
     def __init__(self, path:str) -> None:
-        self.path = path
+        self.path = Path(path)
+        
+        if not self.path.exists():
+            self.path.touch()
+            self.dump({})
 
     @overload
     def __call__(self, key:str) -> Any: 

@@ -1,4 +1,4 @@
-from .model import User, Record, Accounting, Travel, db
+from .model import User, Record, Accounting, Travel, Setting, db
 from utils.g import current
 
 from flask import Flask
@@ -24,4 +24,5 @@ def initAdmin(app:Flask):
     admin.add_view(ModelView(Accounting, db.session, 'Accounting', endpoint='/accounting', category="DataBase"))
     admin.add_view(ModelView(Record, db.session, 'Record', endpoint='/record', category="DataBase"))
     admin.add_view(ModelView(Travel, db.session, 'Travel', endpoint='/travel', category="DataBase"))
+    admin.add_view(ModelView(Setting, db.session, name='Setting', endpoint='/setting', category="DataBase"))
     return admin

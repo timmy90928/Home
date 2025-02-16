@@ -52,11 +52,14 @@ def inject_global_vars():
     try:
         from utils.g import current_user
         name = current_user.name 
+        user_agent = request.user_agent.string.lower()
     except: 
         name = ''
+        user_agent = ''
     return {
         'site_header_title': current.config('server/SITE_HEADER_TITLE'),
         'login_user_name': name, #  current_user.id
+        'mobile': session.get('mobile', 'mobile' in user_agent or 'android' in user_agent or 'iphone' in user_agent),
     }
 
 @APP.before_request
@@ -123,6 +126,7 @@ def create_app(config_name:Literal['development', 'production'] = 'development')
     # print(version_update)
     current.log = set_file_handler(APP, DATAPATH.get('log', f"log-{APP.config['VERSION']}")) # Logger
     current.db = database(APP.config['DATABASE_URI'])
+    current.config('database/path', APP.config['DATABASE_URI'])
     
     ###* Init Tools ###
     initDB(APP)         # Database (SQLAlchemy)

@@ -14,14 +14,18 @@ flask db init
 - 將`migrations/versions`資料夾內的檔案刪除
 
 """
-from flask import Flask
-from utils.utils import timestamp as _timestamp, now_time
+from flask import Flask, current_app
+from utils.utils import timestamp as _timestamp, now_time, copy2
 from flask_sqlalchemy import SQLAlchemy as _SQLAlchemy, model
 from alembic.config import Config as _AlembicConfig
 from alembic import command as _AlembicCommand
 from flask_migrate import Migrate
 from sqlalchemy import Column, Integer, String, Date, Float, ForeignKey, Text, desc
-from utils.utils import hash
+from utils.utils import hash, Path
+from typing import Union, Literal
+
+VERSION = '1'
+
 class SQLAlchemy(_SQLAlchemy):
 
     __table_args__ = {'extend_existing': True}
@@ -97,23 +101,6 @@ class SQLAlchemy(_SQLAlchemy):
 
 db = SQLAlchemy()
 
-def initDB(app:Flask, create_all:bool = False):
-    global db
-    db.init_app(app)
-    migrate = Migrate()
-    migrate.init_app(app, db)
-    alembic_cfg = _AlembicConfig("migrations/alembic.ini")
-    alembic_cfg.set_main_option("sqlalchemy.url", app.config['SQLALCHEMY_DATABASE_URI'])
-    alembic_cfg.set_main_option("script_location", "migrations")
-    
-    
-    ###* APP Context ###
-    with app.app_context():
-        if create_all:
-            db.create_all()
-            _AlembicCommand.revision(alembic_cfg, message=f"Update from {now_time()}", autogenerate=True) # 設定遷移訊息
-            _AlembicCommand.upgrade(alembic_cfg, "head") # 執行升級（將變更應用到資料庫）
-            
 
 class User(db.Model):
     __tablename__ = 'account'
@@ -179,9 +166,67 @@ class Travel(db.Model):
     id = db.pk
     name = db.Column(db.Text)
     datestamp = db.Column(db.Text)
+    category = db.Column(db.Text)
     place = db.Column(db.Text)
     people = db.Column(db.Text)
     note = db.Column(db.Text, default='')
     position = db.Column(db.Text)
     # link = db.Column(db.Text)
 
+class Setting(db.Model):
+    __tablename__ = 'Setting'
+    id = db.pk
+    key = db.Column(db.Text, nullable=False, unique=True)
+    value = db.Column(db.Text)
+
+    @classmethod
+    def get(cls, key, default = None) -> str:
+        _setting:Setting = cls.query.filter_by(key=key).first()
+        if _setting:
+            return _setting.value
+        else:
+            db.add(cls(key, default))
+            cls.get(key, default)
+    @classmethod
+    def set(cls, key, value):
+        _setting:Setting = cls.query.filter_by(key=key).first()
+        if _setting:
+            _setting.value = value
+            db.commit()
+        else:
+            db.add(cls(key, value))
+        
+    def __init__(self, key, value):
+        self.key = key
+        self.value = value
+
+#! Init
+def initDB(app:Flask, create_all:Union[bool,Literal["auto"]] = "auto"):
+    global db
+    db.init_app(app)
+    migrate = Migrate()
+    migrate.init_app(app, db)
+    alembic_cfg = _AlembicConfig("migrations/alembic.ini")
+    alembic_cfg.set_main_option("sqlalchemy.url", app.config['SQLALCHEMY_DATABASE_URI'])
+    alembic_cfg.set_main_option("script_location", "migrations")
+    
+    ###* APP Context ###
+    with app.app_context():
+        db.create_all()
+        Setting.set("START_TIME", now_time())
+
+        if Setting.get("BACKUP","0") == "1": 
+            backup_path = Path(Setting.get("BACKUP_PATH", "./")).joinpath(f"home_backup_{now_time('%Y_%m%d_%H_%M_%S')}.db")
+            copy2(current_app.config["DATABASE_URI"], backup_path)
+        
+        if create_all == "auto":
+            try:
+                db_version = Setting.get("VERSION")
+                create_all = not (db_version == VERSION)
+            except:
+                create_all = True
+        if create_all:
+            _AlembicCommand.revision(alembic_cfg, message=f"Update from {now_time()}", autogenerate=True) # 設定遷移訊息
+            _AlembicCommand.upgrade(alembic_cfg, "head") # 執行升級（將變更應用到資料庫）
+            Setting.set("VERSION", VERSION)
+            Setting.set("UPDATE", now_time())
