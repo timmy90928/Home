@@ -16,12 +16,16 @@ from dotenv import load_dotenv # pip install python-dotenv
 if __name__ == "__main__":
     load_dotenv()
 
-    APP = create_app('development' if current.config.get('server/DEBUG') else 'production')
-    serve(
-        APP,
-        host='0.0.0.0',
-        port=928, 
-        threads=8,
-        connection_limit=10,  # 最大連線數
-        request_queue_size=10 # 設定請求佇列的大小
-    )
+    if current.config.get('server/DEBUG'):
+        APP = create_app('development')
+        APP.run(host='0.0.0.0', port=928, debug=True)
+    else:
+        APP = create_app('production')
+        serve(
+            APP,
+            host='0.0.0.0',
+            port=928, 
+            threads=8,
+            connection_limit=10,  # 最大連線數
+        )
+    
