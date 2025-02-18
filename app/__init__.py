@@ -106,8 +106,8 @@ def all_error_handler(e:HTTPException):
         ['HTTP狀態', e.name],
         ['錯誤訊息', str(e.description)],
         ['回覆(response)', str(e.response)],
-        ['標頭(headers)', str(e.get_headers())],
-        ['參數(args)', str(e.args if e.args else '')],
+        # ['標頭(headers)', str(e.get_headers())],
+        # ['參數(args)', str(e.args if e.args else '')],
     ]
     return render_template('common/list.html',title=f"{e.code}-{e.name}",datas=page,heads=['key', 'value']), e.code
 

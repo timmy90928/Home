@@ -44,18 +44,16 @@ def show_image(filepath):
     return send_from_directory(path.parent, path.name)
 
 @root_bp.route("/db", methods=['GET'])
-@login_required
+@login_required_role.developer
 def db_index():
-    if current_user.rolenum > 0:  return abort(401, response="此頁面僅提供給開發者使用")
     datas = []
     for table in current.db.get_table():
         datas.append([f'<a href="/db/{table}">{table}</a>'])
     return render_template('common/list.html',title='資料表',datas=datas, heads=['資料表名稱'])
 
 @root_bp.route("/db/<table_name>", methods=['GET'])
-@login_required
+@login_required_role.developer
 def show(table_name):
-    if current_user.rolenum > 0:  return redirect('/error/role/0')
     return render_template('common/list.html',title=table_name,datas=current.db.get_col(table_name,'*'),heads=current.db.get_head(table_name))
 
 @root_bp.route('/error/role/<message>', methods=['GET'])

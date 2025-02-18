@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, Request, Response, abort
+from flask import Flask, jsonify, request, Request, Response, abort, current_app
 from itsdangerous import URLSafeTimedSerializer
 from json import dumps, load
 from flask_login import UserMixin# https://ithelp.ithome.com.tw/articles/10328420
@@ -7,6 +7,9 @@ from datetime import datetime, timedelta
 from socket import socket, AF_INET, SOCK_DGRAM
 import logging
 from typing import overload
+from flask_login import login_required as _login_required
+from .g import current_user
+
 def get_latest_release(repo_name:str, repo_owner:str = 'timmy90928') -> tuple[str, str, str]:
     """
     Get the latest release information from GitHub.
@@ -145,19 +148,6 @@ class Token(URLSafeTimedSerializer):
     def verify(self, token:str, expire_seconds:int=None):
         return self.loads(token, max_age=expire_seconds)
     
-
-def checkRole(role:int):
-    """
-    Check if the user's role is lower than the given role.
-
-    If the user's role is higher than the given role, redirect to the `/error/role/{role}` page.
-
-    :param int role: The role to check.
-    """
-    from utils.g import current_user
-    from flask import redirect
-    if current_user.rolenum > role:  return redirect(f'/error/role/{role}')
-
 def add_small_button(*lists, blue:list = None, red:list = None):
     """
     :param blue: [name, href]
@@ -174,3 +164,46 @@ def add_small_button(*lists, blue:list = None, red:list = None):
     if blue: _result.append(f"<a href='{blue[1]}' class='small-blue-button'>{blue[0]}</a>")
     if red: _result.append(f"<a class='small-red-button' onclick=\"Confirm('{red[0]}','{red[1]}')\">刪除</a>")
     return _result
+
+class login_required_role:
+    role:int = None
+    message:str = None
+    def __init__(self, role:int = None):
+        self.role = role
+        self.message = self._get_message(role)
+
+    def __call__(self, func:Callable):
+        @wraps(func)
+        def wrap(*args, **kwargs):
+            if not current_user.is_authenticated:
+                return current_app.login_manager.unauthorized()
+            elif current_user.rolenum > self.role:  
+                abort(403, response=self.message)
+            else:
+                return _login_required(func)(*args, **kwargs)
+
+        return wrap
+    
+    @classmethod
+    def developer(cls, func:Callable):
+        return cls(0)(func)
+
+    @classmethod
+    def admin(cls, func:Callable):
+        return cls(1)(func)
+
+    @classmethod
+    def user(cls, func:Callable):
+        return cls(2)(func)
+    @classmethod
+    def viewer(cls, func:Callable):
+        return cls(3)(func)
+
+    def _get_message(self, role:int):
+        _ = {
+            0:"此功能僅提供給開發者使用",
+            1:"此功能僅提供給管理員使用",
+            2:"此功能僅提供給一般使用者與管理員使用",
+            3:"此功能僅提供給登入者使用"
+        }
+        return _[role]

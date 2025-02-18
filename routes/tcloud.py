@@ -1,9 +1,6 @@
 
-from . import (current_app, Blueprint, render_template, request, redirect,  send_from_directory, url_for, 
-               timestamp, now_time, listdir, path, stat, remove, abort)
-from . import login_user, logout_user, login_required
+from . import *
 
-from utils.g import current_user, current, User
 from platform import system,node
 from utils.web import errorCallback
 from utils.utils import copy, convert_size, base64
@@ -17,11 +14,13 @@ tcloud_bp = Blueprint('tcloud', __name__, url_prefix='/tcloud')
 db = current.db
 
 @tcloud_bp.route("/", methods=['GET'])
+@login_required
 def tcloud_root():
     return redirect('/tcloud/root')
 
 
 @tcloud_bp.route("/<path:path>", methods=['GET'])
+@login_required
 def tcloud(path):
     root = current_app.config['tcloud']
     path = '.' if path=='root' else path
@@ -43,6 +42,7 @@ def tcloud(path):
     return render_template('server/tcloud.html', filelists=filelists, dirlists=dirlists, now_path='root' if path=='.' else path), 200
 
 @tcloud_bp.route("/ppage", methods=['GET'])
+@login_required
 def ppage():
     path = request.args.get('path')
     path = path.split('/')[:-1]
@@ -50,6 +50,7 @@ def ppage():
     return redirect(f'/tcloud/{path}')
 
 @tcloud_bp.route('/upload', methods=['POST'])
+@login_required_role.user
 def tcloud_upload():
     """
     Handles an upload request by saving the file to the configured upload folder.
@@ -66,6 +67,7 @@ def tcloud_upload():
     return redirect(f"/tcloud/{path}")
 
 @tcloud_bp.route('/mkdir', methods=['POST'])
+@login_required_role.user
 def make_dir():
     """
     Handles an upload request by saving the file to the configured upload folder.
@@ -77,6 +79,7 @@ def make_dir():
     return redirect(f"/tcloud/{path}")
 
 @tcloud_bp.route("/download/<path:filename>")
+@login_required
 @errorCallback(note='下載失敗')
 def tcloud_download(filename: str):
     """Handles a download request by sending the file from the configured upload folder."""
@@ -94,7 +97,7 @@ def tcloud_download(filename: str):
         abort(404, response=str(e))
 
 @tcloud_bp.route("/delete/<path:filename>")
-@login_required
+@login_required_role.user
 @errorCallback(note='刪除失敗')
 def tcloud_delete(filename: str):
     """Handles a delete request by removing the specified file from the upload folder."""

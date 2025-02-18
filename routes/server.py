@@ -11,6 +11,7 @@ def index():
     return redirect('/server/info')
 
 @server_bp.route('/info', methods=['GET'])
+@login_required
 def info():
     try: 
         latest_version,web,[latest_download_url, size, updated] = get_latest_release(current_app.config['TITLE'])
@@ -27,27 +28,21 @@ def info():
     ]
     return render_template('common/list.html', title='伺服器資訊',heads=['Key','Value'],datas=data)
 
-@server_bp.route('/update/<version>', methods=['GET'])
-@login_required
-def update(version):
-    # <a href="/server/update/{base64(latest_download_url).encode()}">更新</a>'
-    if current_user.rolenum > 2:  return redirect('/error/role/2')
-    exit()
-    return redirect('/server/info')
-
+FILE_HEAD = ["檔案名稱", "檔案大小", "上次存取時間", "上次修改時間", "建立時間", "下載", "刪除"]
 @server_bp.route('/cloud', methods=['GET'])
 @login_required
 def cloud():
-    if current_user.rolenum > 2:  return redirect('/error/role/2')
     data = []
     files = listdir(current_app.config['UPLOAD_FOLDER'])
-    def time_convert(ts ):return timestamp(ts=ts)
+    def _ts(ts ):return timestamp(ts=ts)
     for file in files:
         file_info = stat(path.join(current_app.config['UPLOAD_FOLDER'], file))
-        data.current_append([file,convert_size(file_info.st_size),time_convert(file_info.st_atime),time_convert(file_info.st_mtime),time_convert(file_info.st_ctime)]) # 檔案名稱、檔案大小、上次存取時間、上次修改時間、建立時間
-    return render_template('server/cloud.html', files=data)
+        data.append([file,convert_size(file_info.st_size),_ts(file_info.st_atime),_ts(file_info.st_mtime),_ts(file_info.st_ctime)]) # 檔案名稱、檔案大小、上次存取時間、上次修改時間、建立時間
+    datas = [add_small_button(*_, blue=['下載',f'/server/cloud/download/{_[0]}'], red=[f'確定要刪除 {_[0]} 嗎',f'/server/cloud/delete/{_[0]}' ]) for _ in data]
+    return render_template('server/cloud.html', files=datas, heads=FILE_HEAD)
 
 @server_bp.route('/cloud/upload', methods=['POST'])
+@login_required_role.user
 def upload():
     """
     Handles an upload request by saving the file to the configured upload folder.
@@ -60,6 +55,7 @@ def upload():
     return redirect('/server/cloud')
 
 @server_bp.route("/cloud/download/<path:filename>")
+@login_required
 def download(filename: str):
     """Handles a download request by sending the file from the configured upload folder."""
     try:
@@ -68,9 +64,9 @@ def download(filename: str):
         return "File not found", 404
 
 @server_bp.route("/cloud/delete/<filename>")
+@login_required_role.user
 def delete(filename: str):
     """Handles a delete request by removing the specified file from the upload folder."""
-    if current_user.rolenum > 2:  return redirect('/error/role/2')
     file_path = path.join(current_app.config["UPLOAD_FOLDER"], filename)
     if filename in ('home.db', 'config.json'):
         return redirect('/alert/無法刪除預設檔案')
@@ -85,9 +81,8 @@ def delete(filename: str):
 
 import json
 @server_bp.route("/setting", methods=['GET', 'POST'])
-@login_required
+@login_required_role.admin
 def settings():
-    if current_user.rolenum > 1:  return redirect('/error/role/1')
     if request.method == 'POST':
         data = request.form
         

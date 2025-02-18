@@ -36,12 +36,14 @@ HEADS = ['流水號','時間', "與上次之間格(天)","備註","編輯","刪�
 HEADS_SQL = "id,event,strftime('%Y-%m-%d', timestamp, 'unixepoch','localtime'),interval,note"
 
 @record_bp.route('/')
+@login_required
 def index_record():
     datas = current.db(INDEX_SQL)
     datas = [add_small_button(e, day, days_since_latest, avg_interval, note, blue=['紀錄',f'/record/{e}']) for e, day, avg_interval, note, days_since_latest in datas]
     return render_template('record/record.html', heads=HEADS_I, datas=datas)
 
 @record_bp.route('/<event>')
+@login_required
 def record_event(event):
     datas = current.db.get_col('Record',HEADS_SQL, {'event': event}, customize=' ORDER BY timestamp DESC')
     datas = [add_small_button(id,t, i, n, blue=['編輯',f'/record/edit/{id}'], red=[f'是否要刪除 {e} (ID={id})',f'/record/delete/{id}']) for id,e, t, i, n in datas]
@@ -50,12 +52,14 @@ def record_event(event):
 
 
 @record_bp.route('/add', methods=['GET'])
-@login_required
+@login_required_role.user
 def record_add():
     if current_user.rolenum > 2:  return redirect('/error/role/2')
     datas = current.db.get_col('Record','event', distinct=True)
     return render_template('record/add.html', datas=datas)
+
 @record_bp.route('/database/add', methods=['POST'])
+@login_required_role.user
 def record_data_add():
     if current_user.rolenum > 2:  return redirect('/error/role/2')
     form = request.form

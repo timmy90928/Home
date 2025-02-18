@@ -11,14 +11,14 @@ HEADS = ['流水號', '帳號', '名稱', '權限', "刪除"]
 HEADS_SQL = "id,username,name,role"
 
 @account_bp.route('/')
-@login_required
+@login_required_role.admin
 def index():
-    if current_user.rolenum > 1:  return redirect('/error/role/1')
     datas = db.get_col('account', HEADS_SQL)
     datas = [add_small_button(i, username, name, role, red=[f'是否確定要刪除 {username} (ID={i})',f'/account/database/delete/{i}']) for i, username, name, role in datas]
     return render_template('account/manager.html', datas = datas, heads = HEADS)
 
 @account_bp.route('/edit/<id>', methods=['GET', 'POST'])
+@login_required
 def edit(id):
     if request.method == 'POST':
         data = {
@@ -34,6 +34,7 @@ def edit(id):
     return render_template('account/login.html', title = "個人帳號管裡", datas = db.get_row('account', ['id', id],HEADS_SQL)[0])
 
 @account_bp.route('/database/add', methods=['POST'])
+@login_required_role.user
 def add():
     username,role = request.json['username'].split(' ')
     from . import roles
@@ -41,6 +42,7 @@ def add():
     db.add('account', {'username':username, 'name':username, 'password':hash(username),'role':roles(int(role)).name})
     return jsonify({'data': f"{username}({roles(int(role)).name})新增成功"}) # redirect('/account')
 @account_bp.route('/database/delete/<id>', methods=['GET'])
+@login_required_role.admin
 def delete(id):
     if current_user.rolenum > 1:  return redirect('/error/role/1')
     if db.get_row('account', ['id', id],'role')[0][0] in ('admin', 'developer'):  return redirect('/alert/此帳號無法刪除')
