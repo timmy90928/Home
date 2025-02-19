@@ -21,7 +21,7 @@ from alembic.config import Config as _AlembicConfig
 from alembic import command as _AlembicCommand
 from flask_migrate import Migrate
 from sqlalchemy import Column, Integer, String, Date, Float, ForeignKey, Text, desc
-from utils.utils import hash, Path
+from utils.utils import hash, manage_file_count
 from typing import Union, Literal
 
 VERSION = '1'
@@ -215,10 +215,6 @@ def initDB(app:Flask, create_all:Union[bool,Literal["auto"]] = "auto"):
         db.create_all()
         Setting.set("START_TIME", now_time())
 
-        if Setting.get("BACKUP","0") == "1": 
-            backup_path = Path(Setting.get("BACKUP_PATH", "./")).joinpath(f"home_backup_{now_time('%Y_%m%d_%H_%M_%S')}.db")
-            copy2(current_app.config["DATABASE_URI"], backup_path)
-        
         if create_all == "auto":
             try:
                 db_version = Setting.get("VERSION")

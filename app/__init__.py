@@ -24,7 +24,7 @@ from flask_babel import Babel
 
 ###* Tools ###
 from utils.jinja_func import initJinjaFunc
-from utils.utils import SysTray, json, get_data_path
+from utils.utils import SysTray, json, manage_file_count
 from utils.web import errorCallback, set_file_handler, Token
 from utils.db import database
 
@@ -123,8 +123,7 @@ def create_app(config_name:Literal['development', 'production'] = 'development')
     APP.config.from_object(configs[config_name])
     babel = Babel(APP, locale_selector=get_locale)
     version_update = not bool(current.config.get("server/VERSION") == APP.config['VERSION'])
-    # print(version_update)
-    current.log = set_file_handler(APP, DATAPATH.get('log', f"log-{APP.config['VERSION']}")) # Logger
+    current.log = set_file_handler(APP, "log_{version}_{time}.log", path=DATAPATH.get('log'), keep_latest=5) # Logger
     current.db = database(APP.config['DATABASE_URI'])
     current.config('database/path', APP.config['DATABASE_URI'])
     
@@ -132,6 +131,11 @@ def create_app(config_name:Literal['development', 'production'] = 'development')
     initDB(APP)         # Database (SQLAlchemy)
     initJinjaFunc(APP)  # Jinja2
     initAdmin(APP)      # Admin View
+
+    ###* Backup ###
+    backup_path = current.config.get("BACKUP_PATH", "./")
+    manage_file_count(backup_path,pattern="home_backup_{time}.db", src=APP.config["DATABASE_URI"], keep_latest=2)
+    manage_file_count(backup_path,pattern="config_backup_{time}.json", src=DATAPATH.get('writable', 'config.json'), keep_latest=4)
 
     ###* Register Blueprint ###
     from routes import ALL_BP

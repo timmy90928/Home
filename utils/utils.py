@@ -1,7 +1,7 @@
 from datetime import timedelta,datetime,timedelta
 from shutil import copy2, rmtree, ignore_patterns, copytree
 from os import environ,mkdir, name as osname
-from os.path import isfile, isdir, split as path_split,join, abspath, exists
+from os.path import isfile, isdir, split as path_split,join, abspath, exists, getctime
 from base64 import b64encode,b64decode
 from urllib.parse import quote, unquote
 from typing import Any, Union, Optional, Callable
@@ -439,6 +439,36 @@ def ifelse(_if:object, _else:object):
         'bar'
     """
     return _if if _if else _else
+
+def manage_file_count(dst_folder:Union[str,Path], pattern:str, keep_latest:int = 3, src:str = None) -> bool:
+    """
+    Manage the number of archives and only keep the latest specified number.
+
+    :param dst_folder: The path to the target archives.
+    :param pattern: Patterns matching archives, E.g., 'home_backup_{time}.db'。
+    :param keep_latest: Latest quantity to keep.
+    :param src: Source file path.
+    """
+    if isinstance(dst_folder, str): dst_folder = Path(dst_folder)
+
+    if src:
+        backup_path = dst_folder.joinpath(pattern.format(time=now_time("%Y_%m%d_%H_%M_%S")))
+        copy2(src, backup_path)
+
+    # Confirm that the target directory exists.
+    if not dst_folder.exists():
+        raise FileNotFoundError(f"The destination directory ({dst_folder}) does not exist.")
+
+    # Get all files matching the pattern.
+    backup_files = sorted(dst_folder.glob(pattern.format(time="*")), key=getctime)
+    
+    # If the file exceeds the limit, delete the oldest file.
+    if len(backup_files) > keep_latest:
+        for old_backup in backup_files[:-(keep_latest+1)]:
+            old_backup.unlink()
+        return True
+    else:
+        return False
 
 if __name__ == '__main__':
     import doctest

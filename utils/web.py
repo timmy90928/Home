@@ -9,6 +9,7 @@ import logging
 from typing import overload
 from flask_login import login_required as _login_required
 from .g import current_user
+from .utils import now_time, manage_file_count, Path
 
 def get_latest_release(repo_name:str, repo_owner:str = 'timmy90928') -> tuple[str, str, str]:
     """
@@ -95,7 +96,7 @@ def errorCallback(note:Optional[str]=None, code:int = 500):
         return wrap
     return decorator
 
-def set_file_handler(app:Flask, filename="log"):
+def set_file_handler(app:Flask, file="log_{version}_{time}.log", path="./", keep_latest:int=5):
     """
     Set a file handler for the app's logger to log messages to a file.
 
@@ -105,12 +106,14 @@ def set_file_handler(app:Flask, filename="log"):
 
     The function will return the app's logger object.
     """
+    logfile = Path(path).joinpath(file.format(version=app.config['VERSION'], time=now_time('%Y_%m%d')))
     app.logger.setLevel(logging.DEBUG)
     app.logger.handlers[0].setLevel(logging.WARNING)
 
     forfat_file = logging.Formatter(fmt='%(asctime)s >>> %(message)s',datefmt='%Y-%m-%d  %H:%M:%S') # (in %(filename)s:%(lineno)d)'
 
-    file_handler = logging.FileHandler(filename=f"{filename}.log", mode='a', encoding="utf-8")
+    file_handler = logging.FileHandler(filename=str(logfile), mode='a', encoding="utf-8")
+    manage_file_count(path,pattern=file.format(version="*", time="*"), keep_latest=keep_latest-1)
     file_handler.setLevel(logging.DEBUG)
     file_handler.setFormatter(fmt=forfat_file)  # Add Formatting.
 
