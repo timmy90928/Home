@@ -19,15 +19,21 @@
 <div class="container">
     {% if datas %}
     <div class="header-section">
+        <div></div>
         <h3>修改</h3>
+        <a class="small-blue-button" href="/accounting/search">{{ _("Search") }}</a>
     </div>
     <form action="/accounting/database/revise/{{ datas[0] }}" method="POST">
     {% else %}
     <div class="header-section">
+        <a href="/home" class="small-blue-button">{{ _("Back") }}</a>
         <h3>新增</h3>
+        <a class="small-blue-button" href="/accounting/search">{{ _("Search") }}</a>
     </div>
     <form action="/accounting/database/add" method="POST">
+    {% set action = "/accounting/database/add" %}
     {% endif %}
+    <form action="/accounting/database/add" method="POST">
         <table class="form-table">
             <tr><!-- Date -->
                 <td class="form-label">日期</td>

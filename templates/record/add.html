@@ -1,7 +1,7 @@
 
 {% extends "common/base.html" %}
 
-{% block title %}新增紀錄{% endblock %}
+{% block title %}{{ _("Record") }}{% endblock %}
 
 {% block head %}
 {{ super() }}
@@ -11,6 +11,12 @@
 {% endblock %}
 
 {% block body %}
+<div class="header-section">
+    <a href="/record" class="small-blue-button">{{ _("Back") }}</a>
+    <h3>{{ _("Add") }}</h3>
+    <div></div>
+</div>
+<div class="container">
     <form action="/record/database/add" method="POST">
 
         <table class="form-table">
@@ -31,12 +37,12 @@
 
         </table>
         <div class="button-group">
-            <input type='submit' value='新增' class="blue-button">
-            <input type='reset'  value='重設' class="red-button">
-            <a href="/record" class="blue-button">回紀錄首頁</a>
+            <input type='submit' value='{{ _("Add")}}' class="blue-button">
+            <input type='reset'  value='{{ _("Reset")}}' class="red-button">
         </div>
 
     </form>
+</div>
 {% endblock %}
 
 {% block bottom %}

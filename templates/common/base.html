@@ -2,7 +2,7 @@
 
 {% extends "common/base.html" %}
 
-{% block title %}Home{% endblock %}
+{% block title %}{{ _("Title")}}{% endblock %}
 
 {% block head %}
 {{ super() }}
@@ -20,27 +20,6 @@
 #}
 
 <!DOCTYPE html>
-<style>
-    .mr {
-        margin-right: 30px;
-    }
-    img {
-        margin-left: 20px; 
-        width: 40px; 
-        height: 40px;
-    }
-
-    @media (max-width: 769px) {
-        .mr {
-            margin-right: 5px;
-        }
-        img {
-            margin-left: 5px; 
-            width: 40px; 
-            height: 40px;
-        }
-    }
-</style>
 
 {% import 'common/macro.jinja' as lib %}
 {{ lib.confirm_dialog() }}
@@ -56,66 +35,170 @@
         <link rel="icon" href="{{ url_for('static', filename = 'picture/house.ico') }}" type="image/x-icon" >
         <link rel="shortcut icon" href="{{ url_for('static', filename = 'picture/house.ico') }}" type="image/x-icon" >
 
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="https://getbootstrap.com/docs/5.3/assets/css/docs.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- <link rel="stylesheet" href="{{ url_for('static', filename='sidebar.css') }}"> -->
         {% block head %} {#? {% block head %}{{ super() }}{% endblock %} #}
         <link rel="stylesheet" href="{{ url_for('static', filename='common.css') }}">
         {% endblock %}
     </head>
 
-    <header>
-        <div><!-- left -->
-            <img src="{{ url_for('static', filename='picture/house.ico') }}" alt="圖示" class="icon">
+    <body class="m-0 border-0 bd-example">
+    <nav class="navbar navbar-expand-lg bg-body-tertiary sticky-top" style="padding: 20px; background-color: #ffffff !important;">
+        <div class="container-fluid">
             {% if request.path == '/' or "blog" in request.path%}
                 {% set _title =  _("%(name)s's Blog", name=site_header_title) %}
-                {% if request.path == '/'%}{% set _icon_link =  "/home" %}{% else %}{% set _icon_link =  "/" %}{% endif %}
+                {% set _icon_link =  "/" %}
             {% else %}
                 {% set _title =  _("%(name)s's Home Management System", name=site_header_title) %}
-                {% if request.path == '/home'%}{% set _icon_link =  "/" %}{% else %}{% set _icon_link =  "/home" %}{% endif %}
+                {% set _icon_link =  "/home" %}
             {% endif %}
-            <h2 class="to-home">{{ _title}}</h2>
-        </div>
-        <div><!-- right -->
-            {% if login_user_name %}
-            <a >{{ login_user_name }}(</a>
-            <a href="/account/logout">{{ _("Logout")}}</a>
-            <a class="mr"> ) </a>
-            {% else %}
-            <a href="/account/login" class="mr">{{ _("Login")}}</a>
-            {% endif %}
-        </div>
+            <a class="navbar-brand" href="{{_icon_link}}">
+                <img src="{{ url_for('static', filename='picture/house.ico') }}" alt="圖示" width="25" height="25" class="d-inline-block align-text-top">
+                <span class="navbar-text" style="padding-top: 20px !important; font-size: 1em; color: #024991">{{ _title}}</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-    </header>
+            <div class="collapse navbar-collapse" id="navbarNavDropdown" style="width: 100%;">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                            <a class="nav-link " href="/">{{_("Home")}}</a>
+                    </li>
 
-    <body>
+                    <li class="nav-item">
+                        <a class="nav-link {% if not login_user_name %}disabled{% endif %}" href="/home">
+                            {{ _("Management") }}
+                        </a>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle {% if not login_user_name %}disabled{% endif %}" href="" data-bs-toggle="dropdown">
+                            {{ _("Accounting") }}
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item " href="/accounting/add">{{ _("Add") }}</a></li>
+                            <li><a class="dropdown-item " href="/accounting/analysis/month">{{ _("Month") }}</a></li>
+                            <li><a class="dropdown-item " href="/accounting/search">{{ _("Search") }}</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle {% if not login_user_name %}disabled{% endif %}" href="" data-bs-toggle="dropdown">
+                            {{ _("Record") }}
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item " href="/record">{{ _("Home") }}</a></li>
+                            <li><a class="dropdown-item " href="/record/add">{{ _("Add") }}</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle {% if not login_user_name %}disabled{% endif %}" href="" data-bs-toggle="dropdown">
+                            {{ _("Travel") }}
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item " href="/travel">{{ _("Home") }}</a></li>
+                            <li><a class="dropdown-item " href="/travel/add">{{ _("Add") }}</a></li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="" data-bs-toggle="dropdown">
+                            {{_("Setting")}}
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <form action="/setlang" method="POST">
+                                    <i class="bi bi-globe" style="padding: 0 10px;"></i>
+                                    <select name="lang" onchange="this.form.submit()">
+                                        {% for key, lang in config['DP_LANGUAGES'].items() %}
+                                            {% set now_lang = (key == session['lang']) %}
+                                            <option value="{{ key }}" {% if now_lang %}selected{% endif %}>
+                                                {{ lang }}  
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </form>
+                            </li>
+
+                        </ul>
+                </li>
+                </ul>
+
+                <div class="dropdown nav-item ms-auto" >
+                    {% if login_user_name %}
+                    <a class="btn-secondary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="width: 100px;">
+                      {{ login_user_name }}
+                    </a>
+                  
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="/account/edit/{{ current_user.id }}">{{  _('Setting') }}</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="/account/logout">{{  _('Logout') }}</a></li>
+
+                    </ul>
+                    {% else %}
+                    <a class="btn-secondary" href="/account/login" role="button" >
+                        {{  _('Login') }}
+                    </a>
+                    {% endif %}
+                  </div>
+                </div>
+
+               
+
+   
+
+            </div>
+            
+        </div>
+        
+
+        
+
+
+    </nav>
+
+       
+        <div class="body_content">
         {% block body %} {# {% block XX %}{{ super() }}{% endblock %} #}
         {% endblock %}
+        </div>
     </body>
 
     <footer>
         <div></div>
-        <p>{{ config['COPYRIGHT'] }}</p>
-        <div>
-            <form action="/setlang" method="POST">
-                <select name="lang" onchange="this.form.submit()">
-                    {% for lang in config['LANGUAGES'] %}
-                        {% set now_lang = (lang == session['lang']) %}
-                        <option value="{{ lang }}" {% if now_lang %}selected{% endif %}>
-                            {{ lang }}  
-                        </option>
-                    {% endfor %}
-                </select>
-            </form>
-        </div>
-        
+        <label>{{ config['COPYRIGHT'] }}</label>
+        <div></div>
     </footer>
 </html>
 
 <script>
-    document.querySelectorAll('.icon').forEach(link => {
-        link.addEventListener('click', function(e) {
-            window.location.href = '{{ _icon_link}}';
-        });
+    document.getElementById('toggle-btn').addEventListener('click', function() {
+        var sidebar = document.getElementById('sidebar');
+        sidebar.classList.toggle('active');
+        event.stopPropagation(); // 防止點擊事件傳遞到 body
+    });
+</script>
+
+
+<script>
+    // 點擊側邊欄內部時，不關閉
+    sidebar.addEventListener("click", function(event) {
+        event.stopPropagation(); // 防止點擊事件傳遞到 body
     });
 
+    // 點擊側邊欄外部時，關閉側邊欄
+    document.addEventListener("click", function() {
+        if (sidebar.classList.contains("active")) {
+            sidebar.classList.remove("active");
+        }
+    });
     // 顯示選擇的檔案名稱
     document.getElementById('file-upload').addEventListener('change', function(e) {
         var fileName = e.target.files[0] ? e.target.files[0].name : '選擇檔案';
@@ -124,23 +207,3 @@
 </script>
 
 {% block bottom %}{% endblock %}
-
-<!-- 
-<div> <!- right https://wayne-blog.com/2022-11-21/pure-css-toggle-menu-icon/ ->
-    <a >{{ login_user_name }}(</a>
-    <a href="/logout">登出</a>
-    <a style="margin-right: 30px;"> ) </a>
-   <a href="#menu">選單</a>
-   <a href="#menu">選單</a>
-   <nav id="menu">
-       <ul>
-           <li><a href="#news">最新消息</a></li>
-           <li><a href="#concept">基本概念</a></li>
-           <li><a href="#video">教學影片</a></li>
-           <li><a href="#html">認識HTML</a></li>
-           <li><a href="#css">認識CSS</a></li>
-       </ul>
-   </nav>
-</div>
-
--->

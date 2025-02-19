@@ -1,27 +1,39 @@
 <!-- https://github.com/timmy90928/Home/issues/9 -->
-<!DOCTYPE html>
-<head>
-    <title>旅遊地圖</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='common.css') }}">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-</head>
+{% extends "common/base.html" %}
+
+{% block title %}{{ _("Travel")}}{% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+{% endblock %}
+
+{% block top %}
 <style>
     #mapholder {
+        position: relative;
+        width: calc(100vw - 40px);
+        height: calc(100vh - 70px - 40px);
+        /*
         width: calc(100% - 40px);
         height: calc(100% - 70px - 40px);
         margin: 20px;
-        position: absolute; 
+         
         top: 70px; 
         left: 0; 
+        */
     }
 </style>
-{% include 'common/header.html' %}
-<div id="mapholder"></div>
-<body>
-    <div class="container">
-        
-    </div>
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div id="mapholder"></div>
+</div>
+{% endblock %}
+
+{% block bottom %}
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script>
         var x = document.getElementById("demo");
         document.addEventListener('DOMContentLoaded', () => { 
@@ -64,6 +76,4 @@
             }
         }
     </script>
-    
-</body>
-<!-- {% include 'common/footer.html' %} -->
+{% endblock %}

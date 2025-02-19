@@ -1,6 +1,6 @@
 {% extends "common/base.html" %}
 
-{% block title %}設定{% endblock %}
+{% block title %}{{ _("Setting") }}{% endblock %}
 
 {% block head %}
 {{ super() }}
@@ -28,7 +28,7 @@
 
 {% block body %}
     <div class="header-section">
-        <h3>設定</h3>
+        <h3>{{ _("Setting") }}</h3>
     </div>
     <div class="notice">※Value完全按照成程式碼, 因此若輸入字串請使用"". Example: [10, "10"]</div>
     <div class="json-box">
@@ -46,8 +46,8 @@
                 <option value="null"></option>
                 <option value="delete"></option>
             </datalist>
-            <input type='submit' value='修改' >
-            <input type='reset'  value='重設' >
+            <input type='submit' value="{{ _('Revise')}}" >
+            <input type='reset'  value="{{ _('Reset')}}" >
         </form>
     </div>
    

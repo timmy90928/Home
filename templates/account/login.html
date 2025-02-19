@@ -1,77 +1,88 @@
-<!DOCTYPE html>
-<head>
-    <title>{{ title }}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='common.css') }}">
-</head>
-{% include 'common/header.html' %}
-<body>
-    <div class="container">
-        <div class="header-section">
-            <h3>{{ title }}</h3>
-        </div>
-        {% if title != "登入" %}
-        <form action="/account/edit/{{ current_user.id }}" method="post">
-        {% else %}
-        <form action="/account/login" method="post">
-        {% endif %}
-            <div class="form-group">
-                <label for="USER">帳號：</label>
-                <input name='username' type='text' id='username' autocomplete="username" maxlength='18'>
-            </div>
+{% extends "common/base.html" %}
 
-            {% if title != "登入" %}
-            <div class="form-group">
-                <label for="name">名稱：</label>
-                <input name='name' type='text' id='name' autocomplete="name">
-            </div>
-            <div class="form-group">
-                <label for="name">權限：</label>
-                <input name='role' type='text' id='role' >
-            </div>
-            {% endif %}
+{% block title %}{{ title }}{% endblock %}
 
-            <div class="form-group">
-                <label for="PSWD">密碼：</label>
-                <input name='password' type='password' id='password' autocomplete="current-password" required>
-            </div>
+{% block head %}
+{{ super() }}
+{% endblock %}
 
-            {% if title != "登入" %}
-            <div class="form-group">
-                <label for="APSWD">再次輸入密碼：</label>
-                <input name='againpassword' type='password' id='againpassword' >
-            </div>
-            {% endif %}
+{% block top %}
+{% endblock %}
 
-            <div class="button-group">
-                <div>
-                    {% if title != "登入" %}
-                    <input type='submit' value='更新' class="blue-button">
-                    <input type='reset'  value='重設' class="red-button">
-                    {% else %}
-                    <input type='submit' value='登入' class="blue-button">
-                    <input type='reset'  value='重設' class="red-button">
-                    {% endif %}
-                </div>
-            </div>
-        </form>
-    </div>
-</body>
-{% include 'common/footer.html' %}
-
-{% if title != "登入" %}
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        var username = document.getElementById('username');
-        var name = document.getElementById('name');
-        var role = document.getElementById('role');
-
-        username.value = "{{ datas[1] }}";
-        username.readOnly = true; 
+{% block body %}
+<div class="header-section">
+    <div></div>
+    <h3>{{ title }}</h3>
+    <div></div>
+</div>
+<div class="container">
         
-        name.value = "{{ datas[2] }}";
+    {% if title != "登入" %}
+    <form action="/account/edit/{{ current_user.id }}" method="post">
+    {% else %}
+    <form action="/account/login" method="post">
+    {% endif %}
+        <div class="form-group">
+            <label for="USER">帳號：</label>
+            <input name='username' type='text' id='username' autocomplete="username" maxlength='18'>
+        </div>
 
-        role.value = "{{ datas[3] }}";
-        role.readOnly = true;
-    })
-</script>
-{% endif %}
+        {% if title != "登入" %}
+        <div class="form-group">
+            <label for="name">名稱：</label>
+            <input name='name' type='text' id='name' autocomplete="name">
+        </div>
+        <div class="form-group">
+            <label for="name">權限：</label>
+            <input name='role' type='text' id='role' >
+        </div>
+        {% endif %}
+
+        <div class="form-group">
+            <label for="PSWD">密碼：</label>
+            <input name='password' type='password' id='password' autocomplete="current-password" required>
+        </div>
+
+        {% if title != "登入" %}
+        <div class="form-group">
+            <label for="APSWD">再次輸入密碼：</label>
+            <input name='againpassword' type='password' id='againpassword' >
+        </div>
+        {% endif %}
+
+        <div class="button-group">
+            <div>
+                {% if title != "登入" %}
+                <input type='submit' value='更新' class="blue-button">
+                <input type='reset'  value='重設' class="red-button">
+                {% else %}
+                <input type='submit' value='登入' class="blue-button">
+                <input type='reset'  value='重設' class="red-button">
+                {% endif %}
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block bottom %}
+    {% if title != _("Login") %}
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            var username = document.getElementById('username');
+            var name = document.getElementById('name');
+            var role = document.getElementById('role');
+
+            username.value = "{{ datas[1] }}";
+            username.readOnly = true; 
+            
+            name.value = "{{ datas[2] }}";
+
+            role.value = "{{ datas[3] }}";
+            role.readOnly = true;
+        })
+    </script>
+    {% endif %}
+{% endblock %}
+
+

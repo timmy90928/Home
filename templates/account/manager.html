@@ -1,6 +1,6 @@
 {% extends "common/base.html" %}
 
-{% block title %}帳號管理{% endblock %}
+{% block title %}{{ _("User Manage") }}{% endblock %}
 
 {% block head %}
 {{ super() }}
@@ -13,8 +13,8 @@
 <div class="container">
     <div class="header-section">
         <div></div>
-        <h3>帳號管理</h3>
-        <a onclick="input_username()" class="small-blue-button">新增</a>
+        <h3>{{ _("User Manage") }}</h3>
+        <a onclick="input_username()" class="small-blue-button">{{ _("Add") }}</a>
     </div>
     {{ lib.list(heads, datas) }}
 </div>

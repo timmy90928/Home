@@ -58,28 +58,28 @@
     <div></div>
 </div>
 {% endif %}
-<div class="container">
-    {% if year %}
-        <ul class="panel-icons">
-            {% for place in datas %}  
-                <li class="panel-icon">
-                    <a href="/blog/{{ year }}/{{ place.name }}">
-                        <img src="/show/{{ place }}/{{ current.config.get('blog/logo','logo.JPG') }}" alt={{place.name}} class="my-icons" />
-                        <p>{{ place.name[current.config.get('blog/delcount',0)|int:] }}</p>
-                    </a>
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <ul class="panel-icons">
-            {% for year in range(max_year,min_year-1,-1) %}  
-                <li class="panel-icon">
-                    <a href="/blog/{{ year }}"><p>{{ year }}</p></a>
-                </li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-</div>
+
+{% if year %}
+    <ul class="panel-icons">
+        {% for place in datas %}  
+            <li class="panel-icon">
+                <a href="/blog/{{ year }}/{{ place.name }}">
+                    <img src="/show/{{ place }}/{{ current.config.get('blog/logo','logo.JPG') }}" alt={{place.name}} class="my-icons" />
+                    <p>{{ place.name[current.config.get('blog/delcount',0)|int:] }}</p>
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <ul class="panel-icons">
+        {% for year in range(max_year,min_year-1,-1) %}  
+            <li class="panel-icon">
+                <a href="/blog/{{ year }}"><p>{{ year }}</p></a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
 {% endblock %}
 
 {% block bottom %}

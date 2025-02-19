@@ -1,6 +1,7 @@
 from utils.utils import now_time as _now_time
 from utils.utils import get_data_path as _get_data_path
 from utils.utils import Path as _Path
+from flask_babel import gettext
 
 APPNAME = 'Home'
 DATAPATH = _get_data_path(APPNAME,['writable', 'log']) #? root_dir = getcwd()
@@ -19,7 +20,9 @@ class BaseConfig:
     SERVER_RUN_TIME  = _now_time()
     MAX_CONTENT_LENGTH = 1024 * 1024 * 1024 # Set the maximum upload file size to 1024MB (1GB).
 
+    MOBILE = {True: gettext('Mobile'), False: gettext('Desktop')}
     LANGUAGES = ['zh_TW', 'en']
+    DP_LANGUAGES = {'zh_TW':'正體中文', 'en':'English'}
     BABEL_DEFAULT_LOCALE = 'en'
 
 class DevelopmentConfig(BaseConfig):

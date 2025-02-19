@@ -75,9 +75,13 @@
     <div></div>
     {% endif %}
 </div>
-<div class="container">
+<div class="center">
     {% if img_index > -1  %}
-    <img src="/show/{{ imgs[img_index] }}" style="height: auto; width: 80%;"/>
+        {% if session['mobile'] %}
+            <img src="/show/{{ imgs[img_index] }}" style="height: auto; width: 95vw;"/>
+        {% else %}
+            <img src="/show/{{ imgs[img_index] }}" style="height: calc(100vh - 100px); width: auto;"/>
+        {% endif %}
     {% else %}
     <ul class="panel-icons">
         {% for n, place in enumerate(imgs) %}
@@ -90,8 +94,6 @@
             {% endif %}
         {% endfor %}
     {% endif %}
-    <!-- <img src="/writable/{{ data }}" style="height: auto; width: 100%;"/> -->
-    
     </ul>
 </div>
 {% endblock %}

@@ -1,85 +1,67 @@
-<!DOCTYPE html>
-<head>
-    <title>搜尋</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='common.css') }}">
-</head>
-{% include 'common/header.html' %}
-<body>
-    <form action="/travel/search" method="POST">
-        <table class="form-table">
-            <tr><!-- name -->
-                <td class="form-label">行程名稱</td>
-                <td >
-                    <input id="name" name="name" type="text" list="name_list" placeholder="請填入行程名稱" >
-                    <datalist id="name_list">
-                        {% for op in options['name'] %}
-                        <option value="{{ op[0] }}"></option>
-                        {% endfor %}
-                    </datalist>
-                </td>
-            </tr><tr><!-- Date -->
-                <td class="form-label">日期</td>
-                <td ><input type="date" id="startDate" name="startDate"><a> 至 </a><input type="date" id="endDate" name="endDate"></td>
-            </tr><tr><!-- place -->
-                <td class="form-label">地點</td>
-                <td >
-                    <input id="place" name="place" type="text" list="place_list" placeholder="請填入地點" >
-                    <datalist id="place_list">
-                        {% for op in options['place'] %}
-                        <option value="{{ op[0] }}"></option>
-                        {% endfor %}
-                    </datalist>
-                </td>
-            </tr><tr><!-- people -->
-                <td class="form-label">人員</td>
-                <td ><input id="people" name="people" type="text" placeholder="請填入人員，可不輸入"></td>
-            </tr><tr><!-- Note -->
-                <td class="form-label">備註</td>
-                <td><input type="text" id="note" name="note" placeholder="請填入備註，可不輸入"/></td>
-            </tr>
-                
-        </table>
-        <div class="button-group">
-            <div>
-                <input type='submit' value='搜尋' class="blue-button">
-                <input type='reset'  value='重設' class="red-button">
-                <a href="/travel" class="blue-button">回旅遊首頁</a>
-            </div>
-        </div>
-    </form>
-    <div class="container">
-        <div class="header-section">
-            <h3>搜尋</h3>
-        </div>
-        <table>
-            <thead>
-                <tr>
-                    {% for head in heads %}
-                        <th>{{ head }}</th>
-                    {% endfor %}
-                    <th>編輯</th>
-                    <th>刪除</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for data_list in datas %}
-                    <tr>
-                        {% for data in data_list %}
-                            <td>{{ data|safe }}</td>
-                        {% endfor %}
-                        <td><a href="/travel/edit/data/{{data_list[0]}}" class="small-blue-button">編輯</a></td>
-                        <td><a href="/travel/database/delete/{{data_list[0]}}" class="small-red-button" name="{{data_list[0]}}">刪除</a></td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</body>
-{% include 'common/footer.html' %}
+{% extends "common/base.html" %}
 
-<script src="{{ url_for('static', filename='utils.js') }}"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', () => { 
-        confirm_delete('.small-red-button');
-    })
-</script>
+{% block title %}{{ _("Travel")}}{% endblock %}
+
+{% block head %}
+{{ super() }}
+{% endblock %}
+
+{% block top %}
+{% endblock %}
+
+{% block body %}
+<div class="header-section">
+    <a href="/travel" class="small-blue-button">{{ _("Back") }}</a>
+    <h3>{{ _("Search") }}</h3>
+    <div></div>
+</div>
+<form action="/travel/search" method="POST">
+    <table class="form-table">
+        <tr><!-- name -->
+            <td class="form-label">行程名稱</td>
+            <td >
+                <input id="name" name="name" type="text" list="name_list" placeholder="請填入行程名稱" >
+                <datalist id="name_list">
+                    {% for op in options['name'] %}
+                    <option value="{{ op[0] }}"></option>
+                    {% endfor %}
+                </datalist>
+            </td>
+        </tr><tr><!-- Date -->
+            <td class="form-label">日期</td>
+            <td ><input type="date" id="startDate" name="startDate"> 至 <input type="date" id="endDate" name="endDate"></td>
+        </tr><tr><!-- place -->
+            <td class="form-label">地點</td>
+            <td >
+                <input id="place" name="place" type="text" list="place_list" placeholder="請填入地點" >
+                <datalist id="place_list">
+                    {% for op in options['place'] %}
+                    <option value="{{ op[0] }}"></option>
+                    {% endfor %}
+                </datalist>
+            </td>
+        </tr><tr><!-- people -->
+            <td class="form-label">人員</td>
+            <td ><input id="people" name="people" type="text" placeholder="請填入人員，可不輸入"></td>
+        </tr><tr><!-- Note -->
+            <td class="form-label">備註</td>
+            <td><input type="text" id="note" name="note" placeholder="請填入備註，可不輸入"/></td>
+        </tr>
+            
+    </table>
+    <div class="button-group">
+        <div>
+            <input type='submit' value='{{ _("Search")}}' class="blue-button">
+            <input type='reset'  value='{{ _("Reset")}}' class="red-button">
+            
+        </div>
+    </div>
+</form>
+<div class="container">
+    {{ lib.list(heads, datas) }}
+</div>
+{% endblock %}
+
+{% block bottom %}
+{% endblock %}
+

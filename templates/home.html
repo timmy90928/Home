@@ -8,18 +8,19 @@
 
 {% block top %}
 <style>
-    h3 {
+    .home-title {
         background-color: #024991;
         color: white;
         text-align: center;
-        padding: 25px 0;
-
+        padding: 15px 0px;
+        width: 100%;
         display: flex;
         align-items: center; /* 垂直置中 */
         justify-content: center; /* 水平置中 */
     }
     .panel-icons {
             display: flex; /* 使用 flexbox */
+            width: 100%;
             flex-wrap: wrap; /* 允許換行 */
             gap: 20px; /* 增加圖示之間的間距 */
         }
@@ -57,91 +58,95 @@
         align-items: center; /* 垂直置中 */
         justify-content: center; /* 水平置中 */
     }
+    .home-title {
+        width: 100%;
+        font-size: 22px;
+    }
 </style>
 {% endblock %}
 
 
 {% block body %}
 
-    <div class="container">
+
         <!-- Accounting -->
-        <h3>會計</h3>
+        <h3 class="home-title">{{ _('Accounting') }}</h3>
         <ul class="panel-icons">
             <li class="panel-icon">
                 <a href="/accounting/analysis/month">
                     <img src="{{ url_for('static', filename='picture/bank.png') }}" alt="會計" class="my-icons" />
-                    <p>會計</p>
+                    <p>{{ _('Accounting') }}</p>
                 </a>
             </li>
             <li class="panel-icon">
                 <a href="/accounting/add">
                     <img src="{{ url_for('static', filename='picture/add.png') }}" alt="新增資料" class="my-icons" />
-                    <p>記帳</p>
+                    <p>{{ _('Add') }}</p>
                 </a>
             </li>
             <li class="panel-icon">
                 <a href="/accounting/search">
                     <img src="{{ url_for('static', filename='picture/search.png') }}" alt="搜尋" class="my-icons" />
-                    <p>搜尋</p>
+                    <p>{{ _('Search') }}</p>
                 </a>
             </li>
         </ul>
 
         <!-- Other -->
-        <h3>其他</h3>
+        <h3 class="home-title">{{ _('Other') }}</h3>
         <ul class="panel-icons">
             <li class="panel-icon">
                 <a href="/tcloud/root">
                     <img src="{{ url_for('static', filename='picture/tcloud.png') }}" alt="TCloud" class="my-icons" />
-                    <p>TCloud</p>
+                    <p>{{ _('TCloud') }}</p>
                 </a>
             </li>
             <li class="panel-icon">
                 <a href="/travel">
                     <img src="{{ url_for('static', filename='picture/travel.png') }}" alt="旅遊日記" class="my-icons" />
-                    <p>旅遊日記</p>
+                    <p>{{ _('Travel') }}</p>
                 </a>
             </li>
             <li class="panel-icon">
                 <a href="/record">
                     <img src="{{ url_for('static', filename='picture/record.ico') }}" alt="紀錄" class="my-icons" />
-                    <p>紀錄</p>
+                    <p>{{ _('Record') }}</p>
                 </a>
             </li>
         </ul>
 
         <!-- Server -->
-        <h3>伺服器</h3>
+        <h3 class="home-title">{{ _('Server') }}</h3>
         <ul class="panel-icons">
             
             <li class="panel-icon">
                 <a href="/server/info">
                     <img src="{{ url_for('static', filename='picture/server.png') }}" alt="伺服器資訊" class="my-icons" />
-                    <p>伺服器資訊</p>
+                    <p>{{ _('Server Info') }}</p>
                 </a>
             </li>
             <li class="panel-icon">
                 <a href="/server/cloud">
                     <img src="{{ url_for('static', filename='picture/file.png') }}" alt="檔案管理" class="my-icons" />
-                    <p>檔案管理</p>
+                    <p>{{ _('File') }}</p>
                 </a>
             </li>
             <li class="panel-icon">
                 <a href="/account/edit/{{ current_user.id }}">
                     <img src="{{ url_for('static', filename='picture/password.png') }}" alt="個人帳號管裡" class="my-icons" />
-                    <p>個人帳號管裡</p>
+                    <p>{{ _('User Settings') }}</p>
                 </a>
             </li>
             <li class="panel-icon">
                 <a href="/server/setting">
                     <img src="{{ url_for('static', filename='picture/setting.png') }}" alt="設定" class="my-icons" />
-                    <p>設定</p>
+                    <p>{{ _('Settings') }}</p>
                 </a>
             </li>
             <li class="panel-icon">
                 <a href="/account">
                     <img src="{{ url_for('static', filename='picture/account.png') }}" alt="帳號管理" class="my-icons" />
-                    <p>帳號管理</p>
+                    <p>{{ _('User Manage') }}</p>
                 </a>
             </li>
         </ul>
@@ -150,24 +155,23 @@
     
         {% if dev %}
         <!-- developer -->
-        <h3>開發人員</h3>
+        <h3 class="home-title">{{ _('Developer') }}</h3>
         <ul class="panel-icons">
             <li class="panel-icon">
                 <a href="/db">
-                    <img src="{{ url_for('static', filename='picture/database.png') }}" alt="伺服器資訊" class="my-icons" />
-                    <p>資料庫</p>
+                    <img src="{{ url_for('static', filename='picture/database.png') }}" alt="資料庫" class="my-icons" />
+                    <p>{{ _('Database') }}</p>
                 </a>
             </li>
             <li class="panel-icon">
                 <a href="/admin">
                     <img src="{{ url_for('static', filename='picture/Paomedia-Small-N-Flat-Keyring.ico') }}" alt="管理員頁面" class="my-icons" />
-                    <p>管理員</p>
+                    <p>{{ _('Admin') }}</p>
                 </a>
             </li>
         </ul>
         {% endif %}
-</div>
-    
+
     
 
 {% endblock %}

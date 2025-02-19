@@ -1,47 +1,24 @@
-<!DOCTYPE html>
-<head>
-    <title>旅遊</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='common.css') }}">
-</head>
-{% include 'common/header.html' %}
-<body>
-    
-    <div class="container">
-        <div class="header-section">
-            <div><a class="small-blue-button" href="/travel/search">搜尋</a><a style="margin-left: 20px;" class="small-blue-button" href="/travel/map">旅遊地圖</a></div>
-            <h3>旅遊</h3>
-            <a class="small-blue-button" href="/travel/add">新增</a>
-            
-        </div>
-        <table>
-            <thead>
-                <tr>
-                    {% for head in heads %}
-                        <th>{{ head }}</th>
-                    {% endfor %}
-                    <th>編輯</th>
-                    <th>刪除</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for data_list in datas %}
-                    <tr>
-                        {% for data in data_list %}
-                            <td>{{ data|safe }}</td>
-                        {% endfor %}
-                        <td><a href="/travel/edit/{{data_list[0]}}" class="small-blue-button">編輯</a></td>
-                        <td><a href="/travel/database/delete/{{data_list[0]}}" class="small-red-button" name="{{data_list[0]}}">刪除</a></td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+{% extends "common/base.html" %}
+
+{% block title %}{{ _("Travel") }}{% endblock %}
+
+{% block head %}
+{{ super() }}
+{% endblock %}
+
+{% block top %}
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="header-section">
+        <div><a class="small-blue-button" href="/travel/search">{{ _("Search") }}</a><a style="margin-left: 20px;" class="small-blue-button" href="/travel/map">旅遊地圖</a></div>
+        <h3>旅遊</h3>
+        <a class="small-blue-button" href="/travel/add">{{ _("Add") }}</a>
     </div>
-</body>
-{% include 'common/footer.html' %}
-<script src="{{ url_for('static', filename='utils.js') }}"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', () => { 
-        confirm_delete('.small-red-button');
-    })
-    
-</script>
+    {{ lib.list(heads, datas) }}
+</div>
+{% endblock %}
+
+{% block bottom %}
+{% endblock %}

@@ -31,7 +31,7 @@ def edit(id):
                 data['password'] = hash(request.form.get('password'))
         db.revise('account', data, ['id', id])
         return redirect('/alert/修改成功?to=/home')
-    return render_template('account/login.html', title = "個人帳號管裡", datas = db.get_row('account', ['id', id],HEADS_SQL)[0])
+    return render_template('account/login.html', title = gettext("Account Settings"), datas = db.get_row('account', ['id', id],HEADS_SQL)[0])
 
 @account_bp.route('/database/add', methods=['POST'])
 @login_required_role.user
@@ -44,7 +44,6 @@ def add():
 @account_bp.route('/database/delete/<id>', methods=['GET'])
 @login_required_role.admin
 def delete(id):
-    if current_user.rolenum > 1:  return redirect('/error/role/1')
     if db.get_row('account', ['id', id],'role')[0][0] in ('admin', 'developer'):  return redirect('/alert/此帳號無法刪除')
     db.delete('account', ['id', id])
     return redirect('/account')
@@ -66,7 +65,7 @@ def login():
             return redirect('/home')
         else:
             return redirect('/alert/帳號密碼錯誤')
-    return render_template('account/login.html', title = "登入")
+    return render_template('account/login.html', title = gettext("Login"))
 @account_bp.route('/logout')
 def logout():
     logout_user()

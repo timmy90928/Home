@@ -1,18 +1,26 @@
-<!DOCTYPE html>
-<head>
-    <title>{{ title }}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='common.css') }}">
-</head>
-{% include 'common/header.html' %}
-{% import 'common/macro.jinja' as lib %}
-{{ lib.confirm_dialog() }} 
-<body>
-    {% if title == "搜尋" %}
+{% extends "common/base.html" %}
+
+{% block title %}{{ _("Accounting")}}{% endblock %}
+
+{% block head %}
+{{ super() }}
+{% endblock %}
+
+{% block top %}
+{% endblock %}
+
+{% block body %}
+<div class="header-section">
+    <a class="small-blue-button" href="/home">{{ _("Back") }}</a>
+    <h3>{{ title }}</h3>
+    <a class="small-blue-button" href="/accounting/add">{{ _("Add") }}</a>
+</div>
+{% if title == "搜尋" %}
     <form action="/accounting/search" method="POST">
         <table class="form-table">
             <tr><!-- Date -->
                 <td class="form-label">日期</td>
-                <td ><input type="date" id="startDate" name="startDate"><a> 至 </a><input type="date" id="endDate" name="endDate"></td>
+                <td ><input type="date" id="startDate" name="startDate"> 至 <input type="date" id="endDate" name="endDate"></td>
             </tr><tr><!-- I/E -->
                 <td class="form-label">收支</td>
                 <td style="text-align: left;">
@@ -33,7 +41,7 @@
                     </td>
                 </tr><tr><!-- Amount -->
                     <td class="form-label">金額</td>
-                    <td><input type="number" id="minAmount" name="minAmount" min="0" placeholder="請輸入最低金額"/><a> 至 </a><input type="number" id="maxAmount" name="maxAmount" min="0" placeholder="請輸入最高金額"/></td>
+                    <td><input type="number" id="minAmount" name="minAmount" min="0" placeholder="請輸入最低金額"/> 至 <input type="number" id="maxAmount" name="maxAmount" min="0" placeholder="請輸入最高金額"/></td>
                 </tr><tr><!-- Note -->
                     <td class="form-label">備註</td>
                     <td><input type="text" id="note" name="note" placeholder="請輸入備註，可不輸入"/></td>
@@ -64,104 +72,26 @@
     {% endif %}
         
     <div class="container">
-        <div class="header-section">
-            <h3>搜尋結果</h3>
-        </div>
+        
         <!-- 總收支 -->
-        <div class="header-section">
-            <h3>總收支</h3>
-        </div>
-        <table >
-            <thead>
-                <tr>
-                    <th>收入</th>
-                    <th>支出</th>
-                    <th>總收支</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    {% for data in t_datas %}
-                        <td >{{ data|safe }}</td>
-                    {% endfor %}
-                </tr>
-            </tbody>
-        </table>
-        <!-- 搜尋 ------------------------------------------------------- -->
-        {% if title != "搜尋" %}
-        <!-- 支出 -->
-        <div class="header-section">
-            <h3>支出</h3>
-        </div>
-        <table>
-            <thead>
-                <tr>
-                    {% for head in e_heads %}
-                        <th>{{ head }}</th>
-                    {% endfor %}
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    {% for data in e_datas %}
-                        <td>{{ data|safe }}</td>
-                    {% endfor %}
-                    
-                </tr>
-            </tbody>
-        </table>
-        <!-- 收入 -->
-        <div class="header-section">
-            <h3>收入</h3>
-        </div>
-        <table>
-            <thead>
-                <tr>
-                    {% for head in i_heads %}
-                        <th>{{ head }}</th>
-                    {% endfor %}
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    {% for data in i_datas %}
-                        <td>{{ data|safe }}</td>
-                    {% endfor %}
-                </tr>
-            </tbody>
-        </table>
-        {% endif %}
-        <!-- ------------------------------------------------------- 搜尋 -->
-        <!-- 詳細資料 -->
-        <div class="header-section">
-            <h3>詳細資料</h3>
-        </div>
-        <table>
-            <thead>
-                <tr>
-                    {% for head in heads %}
-                        <th>{{ head }}</th>
-                    {% endfor %}
-                    <th>編輯</th>
-                    <th>刪除</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for data_list in datas %}
-                    <tr>
-                        {% for data in data_list %}
-                            <td>{{ data|safe }}</td>
-                        {% endfor %}
-                        <td><a href="/accounting/edit/data/{{data_list[0]}}" class="small-blue-button">編輯</a></td>
-                        <td><a class="small-red-button" name="{{data_list[0]}}" onclick="Confirm('是否確定刪除{{data_list[0]}}','/accounting/database/delete/{{data_list[0]}}')">刪除</a></td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</body>
-{% include 'common/footer.html' %}
+        <h3 class="center">總收支</h3>
+        {{ lib.list(["收入","支出","總收支"], t_datas) }}
+        
+        {% if title != "搜尋" %}<!--* Not Search -->
+        <h3 class="center">支出</h3>
+        {{ lib.list(e_heads, e_datas) }}
 
+        <h3 class="center">收入</h3>
+        {{ lib.list(i_heads, i_datas) }}
+ 
+        {% endif %}
+        <h3 class="center">詳細資料</h3>
+        {{ lib.list(heads, datas) }}
+
+    </div>
+{% endblock %}
+
+{% block bottom %}
 <script src="{{ url_for('static', filename='utils.js') }}"></script>
 {% if title == "搜尋" %}
 <script>
@@ -180,3 +110,5 @@
     })
 </script>
 {% endif %}
+{% endblock %}
+
