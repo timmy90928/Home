@@ -52,6 +52,20 @@
         align-items: center; /* 垂直置中 */
         justify-content: center; /* 水平置中 */
     }
+
+    .img-auto {
+        width: auto;
+        height: calc(100vh - 150px);
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+    @media (max-width: 768px) {
+        .img-auto {
+            width: calc(100% - 30px);
+            height: auto;
+        }
+    }
 </style>
 {% endblock %}
 
@@ -70,18 +84,14 @@
         {% endif %}
     </div>
     {% else %}
-    <a class="small-blue-button"  href="/blog/{{year}}">{{ _('back') }}</a>
+    <a class="small-blue-button"  href="/?year={{year}}">{{ _('back') }}</a>
     <h3>{{ place }}</h3>
     <div></div>
     {% endif %}
 </div>
 <div class="center">
-    {% if img_index > -1  %}
-        {% if session['mobile'] %}
-            <img src="/show/{{ imgs[img_index] }}" style="height: auto; width: 95vw;"/>
-        {% else %}
-            <img src="/show/{{ imgs[img_index] }}" style="height: calc(100vh - 100px); width: auto;"/>
-        {% endif %}
+    {% if img_index > -1  %}{# /show/{{ imgs[img_index] }} #}
+    <img class="img-auto" src="/show/{{ imgs[img_index] }}" alt="描述文字" >
     {% else %}
     <ul class="panel-icons">
         {% for n, place in enumerate(imgs) %}

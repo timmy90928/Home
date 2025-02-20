@@ -38,12 +38,15 @@ class json:
     _json.dump(_json_data)
     ```
     """
-    def __init__(self, path:str) -> None:
+    def __init__(self, path:str, create:bool = True) -> None:
         self.path = Path(path)
         
         if not self.path.exists():
-            self.path.touch()
-            self.dump({})
+            if create:
+                self.path.touch()
+                self.dump({})
+            else:
+                raise FileNotFoundError(f"JSON file '{path}' does not exist.")
 
     @overload
     def __call__(self, key:str) -> Any: 
