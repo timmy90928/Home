@@ -81,7 +81,7 @@ def log_status_code(response:Response):
     method = request.method
     status_code = response.status_code
 
-    if int(status_code/100) == 3: current.log.debug(f'{status_code} >>> {method:^5} >>> {ip:^12} >>> {page}')
+    if int(status_code/100) != 3: current.log.debug(f'{status_code} >>> {method:^5} >>> {ip:^12} >>> {page}')
     return response
 
 @APP.teardown_request
