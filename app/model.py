@@ -28,14 +28,17 @@ VERSION = '1'
 
 class SQLAlchemy(_SQLAlchemy):
 
-    __table_args__ = {'extend_existing': True}
-    __tablename__ = ''
+    # __table_args__ = {'extend_existing': True}
+    # __tablename__ = ''
     Integer = Integer
     String = String
     Date = Date
     Float = Float
     Text = Text
     ForeignKey = ForeignKey
+    """
+    一對多的多
+    """
 
     def __init__(self, app:Flask  = None):
         """
@@ -79,6 +82,41 @@ class SQLAlchemy(_SQLAlchemy):
                       name=name, 
                       **kwargs 
         )
+    
+    def relationship_backref(self, argument, backref, *, secondary=None, lazy="select", **kwargs):
+        """
+        一對多的一
+
+        :param argument: 一對多的多, class name
+        :param backref: 一對多的多 對 一對多的一 的 新名稱
+
+        ```
+        class User(db.Model):
+            id = db.Column(db.Integer, primary_key=True)
+            username = db.Column(db.String(64), unique=True, index=True)
+            posts = db.relationship_backref('Post', backref='author', lazy='dynamic')
+        
+        class Post(db.Model):
+            id = db.Column(db.Integer, primary_key=True)
+            title = db.Column(db.String(128))
+            body = db.Column(db.Text)
+            user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+        
+        # 查詢使用者
+        user = User.query.filter_by(username='john').first()
+
+        # 訪問使用者的所有文章
+        for post in user.posts:
+            print(post.title)
+
+        # 查詢文章
+        post = Post.query.first()
+
+        # 訪問文章的作者
+        print(post.author.username)
+        ```
+        """
+        return self.relationship(argument, backref=backref, secondary=secondary, lazy=lazy, **kwargs)
     
     @property
     def pk(self):
