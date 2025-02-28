@@ -9,7 +9,7 @@ from flask import redirect
 from flask import make_response
 from flask import session #? session['key'] = 'value'
 from flask import abort
-from flask import send_from_directory
+from flask import send_file
 from flask import jsonify
 from flask import Response
 from flask import current_app

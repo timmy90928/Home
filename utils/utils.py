@@ -287,19 +287,39 @@ class Path(type(_Path()), _Path):
         self.path = path
         self.exist = exists(path)
 
-    @property
-    def abspath(self):
-        return abspath(self.path)
-    @property
-    def dir(self):
-        return path_split(self.path)[0]
-    @property
-    def file(self):
-        return path_split(self.path)[-1]
-
-    def get(self, *path):
-        return join(self.path, *path)
+    def not_exist_create(self, create_file:bool = True):
+        if self.suffix:
+            self.parent.mkdir(parents=True, exist_ok=True)
+            if create_file: self.touch(exist_ok=True)
+        else:  # No file extension, treated as a directory.
+            self.mkdir(parents=True, exist_ok=True)
+        return not self.exist
     
+    @overload
+    def get_all_suffix(self) -> Optional[list[_Path]]: ...
+    @overload   
+    def get_all_suffix(self, only_one:bool = False) -> Optional[_Path]: ...
+    def get_all_suffix(self, only_one:bool = False):
+        if not self.suffix:
+            paths = list(self.parent.glob(f"{self.name}.*"))
+            match len(paths):
+                case 0:
+                    return None
+                case 1:
+                    return paths[0]
+                case _:
+                    return paths[0] if only_one else paths
+        else:
+            return self
+
+    def del_all_suffix(self):
+        if not self.suffix:
+            paths = list(self.parent.glob(f"{self.name}.*"))
+            for path in paths:
+                path.unlink()
+        else:
+            self.unlink()
+
     @property
     def type(self) -> Optional[Literal['dir', 'file']]:
         src = self.path

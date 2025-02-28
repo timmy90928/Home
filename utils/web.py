@@ -96,6 +96,26 @@ def errorCallback(note:Optional[str]=None, code:int = 500):
         return wrap
     return decorator
 
+class SkipError:
+    @overload
+    def __init__(self, skipErrpr:bool = False, note:Optional[str]=None, code:int = 500):...
+    @overload
+    def __init__(self, skipErrpr:bool = True):...
+    def __init__(self, skipErrpr:bool = True, note:Optional[str]=None, code:int = 500):
+        self.skipErrpr = skipErrpr
+        if not skipErrpr:
+            self.note = note
+            self.code = code
+    
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type:TypeError, exc_value, traceback):
+        if exc_type:
+            if not self.skipErrpr: abort(self.code, description=f"[{exc_type.__name__}] {exc_value}",  response=self.note)
+
+        return True
+    
 def set_file_handler(app:Flask, file="log_{version}_{time}.log", path="./", keep_latest:int=5):
     """
     Set a file handler for the app's logger to log messages to a file.
@@ -171,8 +191,9 @@ def add_small_button(*lists, blue:list = None, red:list = None):
 class login_required_role:
     role:int = None
     message:str = None
-    def __init__(self, role:int = None):
+    def __init__(self, role:int = -1, user_id_param:str = None):
         self.role = role
+        self.user_id_param = user_id_param
         self.message = self._get_message(role)
 
     def __call__(self, func:Callable):
@@ -180,6 +201,9 @@ class login_required_role:
         def wrap(*args, **kwargs):
             if not current_user.is_authenticated:
                 return current_app.login_manager.unauthorized()
+            elif self.user_id_param:
+                self._check_user_id(kwargs[self.user_id_param])
+                return _login_required(func)(*args, **kwargs)
             elif current_user.rolenum > self.role:  
                 abort(403, response=self.message)
             else:
@@ -202,11 +226,21 @@ class login_required_role:
     def viewer(cls, func:Callable):
         return cls(3)(func)
 
+    @classmethod
+    def onlyself(cls, user_id):
+        return cls()._check_user_id(user_id)
+    
     def _get_message(self, role:int):
         _ = {
+            -1: "不要亂看別人的資料喔~",
             0:"此功能僅提供給開發者使用",
             1:"此功能僅提供給管理員使用",
             2:"此功能僅提供給一般使用者與管理員使用",
             3:"此功能僅提供給登入者使用"
         }
         return _[role]
+    
+    def _check_user_id(self, user_id:int):
+        if current_user.get_id() != str(user_id) and current_user.rolenum > 0:
+            abort(403, response=self.message)
+    

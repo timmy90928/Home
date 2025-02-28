@@ -59,7 +59,7 @@ def upload():
 def download(filename: str):
     """Handles a download request by sending the file from the configured upload folder."""
     try:
-        return send_from_directory(current_app.config["UPLOAD_FOLDER"], filename, as_attachment=True)
+        return send_file(current_app.config["UPLOAD_FOLDER"], filename, as_attachment=True)
     except FileNotFoundError:
         return "File not found", 404
 

@@ -31,12 +31,12 @@ from utils.db import database
 ###* Main App ###
 APP = Flask(APPNAME)
 systray = SysTray(APPNAME) 
-current.config = json(DATAPATH.get('writable', 'config.json'))
+current.config = json(DATAPATH.joinpath('writable', 'config.json'))
 
 ###* Configurations ###
 #! SECRET_KEY & VERSION
 APP.secret_key = '62940eecccdf094995b09e1191b6e0afdcba8ee3293a5c893e146d0a5cf43210' # home-by-timmy90928
-APP.config['UPLOAD_FOLDER'] = DATAPATH.get('writable') # Define the address of the upload folder.
+APP.config['UPLOAD_FOLDER'] = DATAPATH.joinpath('writable') # Define the address of the upload folder.
 APP.config['tcloud'] = current.config.get('base/tcloud', "../")
 APP.config['VERSION'] = 'v1.0.0-beta.5'  # __version__ = ".".join(("0", "6", "3"))
 
@@ -123,7 +123,7 @@ def create_app(config_name:Literal['development', 'production'] = 'development')
     APP.config.from_object(configs[config_name])
     babel = Babel(APP, locale_selector=get_locale)
     version_update = not bool(current.config.get("server/VERSION") == APP.config['VERSION'])
-    current.log = set_file_handler(APP, "log_{version}_{time}.log", path=DATAPATH.get('log'), keep_latest=5) # Logger
+    current.log = set_file_handler(APP, "log_{version}_{time}.log", path=DATAPATH.joinpath('log'), keep_latest=5) # Logger
     current.db = database(APP.config['DATABASE_URI'])
     current.config('database/path', APP.config['DATABASE_URI'])
     
@@ -135,7 +135,7 @@ def create_app(config_name:Literal['development', 'production'] = 'development')
     ###* Backup ###
     backup_path = current.config.get("BACKUP_PATH", "./")
     manage_file_count(backup_path,pattern="home_backup_{time}.db", src=APP.config["DATABASE_URI"], keep_latest=2)
-    manage_file_count(backup_path,pattern="config_backup_{time}.json", src=DATAPATH.get('writable', 'config.json'), keep_latest=4)
+    manage_file_count(backup_path,pattern="config_backup_{time}.json", src=DATAPATH.joinpath('writable', 'config.json'), keep_latest=4)
 
     ###* Register Blueprint ###
     from routes import ALL_BP

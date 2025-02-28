@@ -18,9 +18,16 @@ def index():
     return render_template('account/manager.html', datas = datas, heads = HEADS)
 
 @account_bp.route('/edit/<id>', methods=['GET', 'POST'])
-@login_required
+@login_required_role(user_id_param='id')
 def edit(id):
     if request.method == 'POST':
+        with SkipError():
+            file = check_file(request)
+            headshot_path = Path(current.config['UPLOAD_FOLDER']).joinpath("headshot")
+            headshot_path.joinpath(f"headshot_user_{id}").del_all_suffix()
+
+            file.save(headshot_path.joinpath(f"headshot_user_{id}.{file.filename.split('.')[-1]}"))
+
         data = {
             'name': request.form.get('name'),
         }
@@ -30,7 +37,7 @@ def edit(id):
             else:
                 data['password'] = hash(request.form.get('password'))
         db.revise('account', data, ['id', id])
-        return redirect('/alert/修改成功?to=/home')
+        return redirect(f'/alert/修改成功?to=/account/edit/{id}')
     return render_template('account/login.html', title = gettext("Account Settings"), datas = db.get_row('account', ['id', id],HEADS_SQL)[0])
 
 @account_bp.route('/database/add', methods=['POST'])

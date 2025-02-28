@@ -7,7 +7,7 @@ APPNAME = 'Home'
 DATAPATH = _get_data_path(APPNAME,['writable', 'log']) #? root_dir = getcwd()
 
 def _create_sqlite_uri(abspath) -> str:
-    return 'sqlite:///' + abspath
+    return 'sqlite:///' + str(abspath)
 
 class BaseConfig:
     TITLE = APPNAME
@@ -33,7 +33,7 @@ class DevelopmentConfig(BaseConfig):
 
 class ProductionConfig(BaseConfig):
     DEBUG = False
-    DATABASE_URI = DATAPATH.get('writable', 'home.db')
+    DATABASE_URI = DATAPATH.joinpath('writable', 'home.db')
     SQLALCHEMY_DATABASE_URI = _create_sqlite_uri(DATABASE_URI)
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 

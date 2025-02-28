@@ -61,8 +61,21 @@ def home():
 
 @root_bp.route('/show/<path:filepath>')
 def show_image(filepath):
+    #? User Headshot: /show/headshot/headshot_user_1?folder=upload&iferror=person-circle.svg
+    errorfile = Path("static/picture").joinpath(request.args.get('iferror', 'file-x-3-2.svg')).absolute()
     path = Path(filepath)
-    return send_from_directory(path.parent, path.name)
+    if "headshot_user" in path.name:
+        login_required_role.onlyself(path.name.split('_')[-1].split('.')[0])
+
+    with SkipError():
+        folder = Path(current.config.get(f"folder/{request.args.get('folder')}"))
+        path = folder / path
+
+    path = path.get_all_suffix(only_one=True)
+    if path and path.exists(): 
+        return send_file(str(path), last_modified=path.stat().st_mtime, max_age=60)
+    else:
+        return send_file(errorfile, max_age=60*60)
 
 @root_bp.route("/db", methods=['GET'])
 @login_required_role.developer
@@ -115,7 +128,7 @@ def serve_validation_file(filename):
 
     [ZeroSSL]: https://manage.sslforfree.com/dashboard "SSL for Free"
     """
-    return send_from_directory('./static', filename)
+    return send_file(Path('./static').joinpath(filename))
 
 @root_bp.route('/cause/<int:status_code>', methods=['GET'])
 def cause(status_code:int):
