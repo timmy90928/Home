@@ -55,7 +55,7 @@
 
     .img-auto {
         width: auto;
-        height: calc(100vh - 150px);
+        height: calc(100vh - 130px);
         max-width: 100%;
         max-height: 100%;
         object-fit: contain;
@@ -73,8 +73,9 @@
 <div class="header-section">
     {% if img_index > -1 %}
     <a class="small-blue-button"  href="/blog/{{ now }}">{{ _('back') }}</a>
-    <h3>{{ place }}</h3>
+    <h3>{{ name }}</h3>
     <div>
+        {#
         {% if img_index > 0 %}
         <a class="small-blue-button"  href="/blog/{{ now }}?index={{img_index-1}}">←</a>
         {% endif %}
@@ -82,29 +83,56 @@
         {% if img_index < len(imgs)-1 %}
         <a class="small-blue-button"  href="/blog/{{ now }}?index={{img_index+1}}">→</a>
         {% endif %}
+        #}
     </div>
     {% else %}
     <a class="small-blue-button"  href="/?year={{year}}">{{ _('back') }}</a>
-    <h3>{{ place }}</h3>
+    <h3>{{ name }}</h3>
     <div></div>
     {% endif %}
 </div>
 <div class="center">
-    {% if img_index > -1  %}{# /show/{{ imgs[img_index] }} #}
-    <img class="img-auto" src="/show/{{ imgs[img_index] }}" alt="描述文字" >
-    {% else %}
-    <ul class="panel-icons">
-        {% for n, place in enumerate(imgs) %}
-            {% if place.suffix[1:] in ('jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG', 'gif', 'GIF', 'bmp', 'svg', 'webp', 'avif', 'tiff') %}
-            <li class="panel-icon">
-                <a href="/blog/{{ now }}?index={{n}}">
-                    <img src="/show/{{place}}" alt={{place.name}} class="my-icons" />
+    {% if img_index > -1  %}<!--* Big -->
+    <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-indicators">
+            {% for n, place in enumerate(imgs) %}
+                {% if n == img_index %}
+                {% set _class = "active" %}
+                {% set _aria_current = "true" %}
+                {% endif %}
+                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="{{n}}" aria-label="Slide {{n+1}}" class="{{_class}}" aria-current="{{_aria_current}}"></button>
+            {% endfor %}
+        </div>
+        <div class="carousel-inner">
+            {% for n, place in enumerate(imgs) %}
+            <div class="carousel-item {% if n == img_index %}active{% endif %}" >
+                <img src="/show/{{place}}" class="d-block w-100 img-auto" alt="...">
+            </div>
+            {% endfor %}
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+    {% else %}<!--* Small -->
+    <div class="album">
+        <div class="row center">
+            {% for n, place in enumerate(imgs) %}
+            <div class="card-deck col-lg-3 col-md-4 col-sm-6 col-12 mb-4"><div class="card h-100  shadow-sm" ><!-- style="height: 600px; width: 332px"-->
+                <a href="/blog/{{ now }}?name={{name}}&index={{n}}">
+                    <img src="/show/{{place}}" alt="{{ place.name }}" class="card-img-top img-fluid" /><!-- width="332" height="249" -->
                 </a>
-            </li>
-            {% endif %}
-        {% endfor %}
+            </div></div>
+            {% endfor %}
+        </div>
     {% endif %}
-    </ul>
+</div>
+    
 </div>
 {% endblock %}
 

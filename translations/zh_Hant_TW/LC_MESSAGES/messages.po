@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2025-02-16 21:09+0800\n"
+"POT-Creation-Date: 2025-02-28 20:17+0800\n"
 "PO-Revision-Date: 2025-02-05 10:18+0800\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: zh_Hant_TW\n"
@@ -26,32 +26,32 @@ msgstr "行動"
 msgid "Desktop"
 msgstr "電腦"
 
-#: routes/account.py:34
+#: routes/account.py:41
 msgid "Account Settings"
 msgstr "帳號設定"
 
-#: routes/account.py:67 templates/account/login.html:69
-#: templates/common/base.html:147
+#: routes/account.py:75 templates/account/login.html:97
+#: templates/common/base.html:162
 msgid "Login"
 msgstr "登入"
 
-#: routes/accounting.py:30 routes/accounting.py:75 routes/travel.py:45
+#: routes/accounting.py:26 routes/accounting.py:73 routes/travel.py:45
 #, python-format
 msgid "Do you want to delete %(name)s (ID=%(id)s)?"
 msgstr "確認要刪除 %(name)s (ID=%(id)s) 嗎?"
 
-#: routes/root.py:14
+#: routes/root.py:37
 msgid "Blog path not set."
 msgstr "部落格的路徑未設定"
 
-#: templates/accounting/search.html:3 templates/common/base.html:81
+#: templates/accounting/search.html:3 templates/common/base.html:87
 #: templates/home.html:73 templates/home.html:78
 msgid "Accounting"
 msgstr "會計"
 
 #: templates/account/manager.html:17 templates/accounting/search.html:16
-#: templates/common/base.html:84 templates/common/base.html:96
-#: templates/common/base.html:106 templates/home.html:84
+#: templates/common/base.html:90 templates/common/base.html:103
+#: templates/common/base.html:114 templates/home.html:84
 #: templates/record/add.html:16 templates/record/add.html:40
 #: templates/travel/add.html:37 templates/travel/add.html:107
 #: templates/travel/travel.html:17
@@ -59,7 +59,7 @@ msgid "Add"
 msgstr "新增"
 
 #: templates/accounting/add.html:24 templates/accounting/add.html:31
-#: templates/common/base.html:86 templates/home.html:90
+#: templates/common/base.html:92 templates/home.html:90
 #: templates/travel/search.html:15 templates/travel/search.html:54
 #: templates/travel/travel.html:15
 msgid "Search"
@@ -73,13 +73,13 @@ msgstr "其他"
 msgid "TCloud"
 msgstr "TCloud"
 
-#: templates/common/base.html:102 templates/home.html:107
+#: templates/common/base.html:110 templates/home.html:107
 #: templates/travel/add.html:3 templates/travel/search.html:3
 #: templates/travel/travel.html:3 templates/travel/travel_map.html:4
 msgid "Travel"
 msgstr "旅遊"
 
-#: templates/common/base.html:92 templates/home.html:113
+#: templates/common/base.html:99 templates/home.html:113
 #: templates/record/add.html:4
 msgid "Record"
 msgstr "紀錄"
@@ -96,7 +96,7 @@ msgstr "伺服器資訊"
 msgid "File"
 msgstr "檔案"
 
-#: templates/home.html:137
+#: templates/common/base.html:128 templates/home.html:137
 msgid "User Settings"
 msgstr "使用者設定"
 
@@ -121,10 +121,9 @@ msgstr "資料庫"
 msgid "Admin"
 msgstr "管理員"
 
-#: templates/index.html:56 templates/travel/blog.html:61
-#: templates/travel/blog.html:73
-msgid "back"
-msgstr "返回"
+#: templates/index.html:62
+msgid "Last"
+msgstr "最新"
 
 #: templates/accounting/add.html:29 templates/accounting/search.html:14
 #: templates/record/add.html:15 templates/travel/add.html:29
@@ -132,37 +131,37 @@ msgstr "返回"
 msgid "Back"
 msgstr "返回"
 
-#: templates/common/base.html:53
+#: templates/common/base.html:54
 #, python-format
 msgid "%(name)s's Blog"
 msgstr "%(name)s的部落格"
 
-#: templates/common/base.html:56
+#: templates/common/base.html:57
 #, python-format
 msgid "%(name)s's Home Management System"
 msgstr "%(name)s的家庭管理系統"
 
-#: templates/common/base.html:70 templates/common/base.html:95
-#: templates/common/base.html:105
+#: templates/common/base.html:74 templates/common/base.html:102
+#: templates/common/base.html:113
 msgid "Home"
 msgstr "首頁"
 
-#: templates/common/base.html:75 templates/common/list.html:14
+#: templates/common/base.html:80 templates/common/list.html:14
 msgid "Management"
 msgstr "管理系統"
 
-#: templates/common/base.html:85
+#: templates/common/base.html:91
 msgid "Month"
 msgstr "月分析"
 
-#: templates/common/base.html:112 templates/common/base.html:140
-#: templates/server/setting.html:3 templates/server/setting.html:31
-msgid "Setting"
-msgstr "設定"
-
-#: templates/common/base.html:142
+#: templates/common/base.html:159
 msgid "Logout"
 msgstr "登出"
+
+#: templates/common/base.html:160 templates/server/setting.html:3
+#: templates/server/setting.html:31
+msgid "Setting"
+msgstr "設定"
 
 #: templates/record/add.html:41 templates/server/setting.html:50
 #: templates/travel/add.html:103 templates/travel/add.html:106
@@ -178,6 +177,10 @@ msgstr "伺服器檔案"
 #: templates/travel/add.html:104
 msgid "Revise"
 msgstr "修改"
+
+#: templates/travel/blog.html:75 templates/travel/blog.html:89
+msgid "back"
+msgstr "返回"
 
 #~ msgid "Add Accounting"
 #~ msgstr "新增帳目"

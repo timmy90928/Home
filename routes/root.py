@@ -23,12 +23,14 @@ def index():
             except:
                 blog_cfg = {}
 
+            blog_cfg['path_name'] = directory.name
             blog_cfg['title'] = blog_cfg.get('title', directory.name.split(' ')[1])
             blog_cfg['date'] = blog_cfg.get('date', directory.name.split(' ')[0])
-            blog_cfg['logo'] = blog_cfg.get('logo', current.config.get('blog/logo','logo.JPG'))
+            blog_cfg['folder'] = blog_cfg.get('folder', 'favorite')
+            blog_cfg['path'] = str(directory.joinpath(blog_cfg['folder']) if directory.joinpath(blog_cfg['folder']).is_dir() else directory)
+            blog_cfg['token'] = token.generate({'year': year, 'name': blog_cfg['path_name'], 'path': blog_cfg['path']})
+            blog_cfg['logo'] = blog_cfg.get('logo', current.config.get('blog/logo',"logo.JPG"))
             blog_cfg['text'] = blog_cfg.get('text', '')
-            blog_cfg['path'] = str(directory)
-            blog_cfg['path_name'] = directory.name
 
             datas.append(blog_cfg)
     else:
@@ -36,23 +38,17 @@ def index():
     
     return render_template('index.html', max_year=max(numeric_data), min_year=min(numeric_data), datas=datas, year=year)
 
-@root_bp.route('/blog/<int:year>', methods=['GET'])
-def blog_year(year):
-    _p = current.config.get('blog/path')
-    path = Path(_p).joinpath(f'{year}')
-    directories = [item for item in path.iterdir()]
+@root_bp.route('/blog/<cfg_token>', methods=['GET'])
+def blog_place(cfg_token):
+    tkn:dict[str, str] = token.verify(cfg_token)
+    year = tkn['year']
+    name = tkn['name']
+    _p = Path(tkn['path'])
 
-    return render_template('index.html',datas=directories, year=year)
-
-@root_bp.route('/blog/<int:year>/<place>', methods=['GET'])
-def blog_place(year:int, place):
-    _p = Path(current.config.get('blog/path'))
-    _p = _p.joinpath(f'{year}',place)
     img_index = int(request.args.get('index',-1))
-    imgs = [_ for _ in _p.iterdir() if _.suffix[1:] in ('jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG', 'gif', 'GIF', 'bmp', 'svg', 'webp', 'avif', 'tiff')]
-    now = f"{year}/{place}"
+    imgs = [_ for _ in _p.iterdir() if _.suffix[1:].lower() in ('jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp', 'avif', 'tiff')]
 
-    return render_template('travel/blog.html',place=place, img_index=img_index, imgs=imgs, year=year, now=now)
+    return render_template('travel/blog.html',name=name, img_index=img_index, imgs=imgs, year=year, now=cfg_token)
 
 @root_bp.route('/home', methods=['GET'])
 @login_required

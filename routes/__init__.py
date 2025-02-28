@@ -25,6 +25,7 @@ from flask_babel import lazy_gettext
 from flask_babel import gettext
 from flask_babel import ngettext
 
+###* OS ###
 from os import listdir
 from os import path
 from os import stat
@@ -35,6 +36,7 @@ from os import getcwd
 from utils.utils import *
 from utils.web import *
 from utils.g import *
+token = Token()
 
 ###* Blueprint ###
 from .root import root_bp
@@ -46,7 +48,6 @@ from .tcloud import tcloud_bp
 from .record import record_bp
 
 ALL_BP = [root_bp, server_bp, accounting_bp, account_bp, travel_bp, tcloud_bp, record_bp]
-
 
 """"
 https://dowyuu.github.io/program/2020/05/27/Input-Datalist/
