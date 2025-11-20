@@ -57,7 +57,7 @@ def inject_global_vars():
         name = ''
         user_agent = ''
     return {
-        'site_header_title': current.config('server/SITE_HEADER_TITLE'),
+        'site_header_title': current.config.get('server/SITE_HEADER_TITLE', 'Timmy'),
         'login_user_name': name, #  current_user.id
         'mobile': session.get('mobile', 'mobile' in user_agent or 'android' in user_agent or 'iphone' in user_agent),
     }
@@ -125,7 +125,7 @@ def create_app(config_name:Literal['development', 'production'] = 'development')
     version_update = not bool(current.config.get("server/VERSION") == APP.config['VERSION'])
     current.log = set_file_handler(APP, "log_{version}_{time}.log", path=DATAPATH.joinpath('log'), keep_latest=5) # Logger
     current.db = database(APP.config['DATABASE_URI'])
-    current.config('database/path', APP.config['DATABASE_URI'])
+    current.config('database/path', str(APP.config['DATABASE_URI']))
     
     ###* Init Tools ###
     initDB(APP)         # Database (SQLAlchemy)

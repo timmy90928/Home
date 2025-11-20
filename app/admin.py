@@ -17,7 +17,8 @@ def initAdmin(app:Flask):
 
     ###* File View ###
     admin.add_view(FileAdmin('c:\\', name='File Manager', endpoint='/file_manager'))
-    admin.add_view(FileAdmin(current.config.get('blog/path'), name='Blog Images', endpoint='/blog'))
+    blog_path = current.config.get('blog/path', './upload/blog')
+    admin.add_view(FileAdmin(blog_path, name='Blog Images', endpoint='/blog'))
 
     ###* Model View ###
     admin.add_view(ModelView(User, db.session, 'User Manager', endpoint='/account', category="DataBase"))

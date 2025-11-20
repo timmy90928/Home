@@ -8,7 +8,7 @@ from typing import Any, Union, Optional, Callable
 import math
 from hashlib import sha3_256
 from pathlib import WindowsPath, PosixPath, Path as _Path
-from json import load, dump
+from json import load, dump, JSONDecodeError
 from pystray import MenuItem, Icon as _icon, Menu as StrayMenu
 from PIL import Image
 from threading import Thread
@@ -85,7 +85,12 @@ class json:
     def get(self, key:str, default = None):
         keys = key.split('/')
         try:
-            return self._get(keys)
+            value = self._get(keys)
+            if value is None and default is not None:
+                result = self._set(keys, default)
+                self.dump(result)
+                return default
+            return value
         except KeyError:
             result = self._set(keys, default)
             self.dump(result)
@@ -115,8 +120,12 @@ class json:
             result = result[k]
         return result
     def load(self) -> dict:
-        with open(self.path, 'r', encoding='utf-8') as f:
-            return load(f)
+        try:
+            with open(self.path, 'r', encoding='utf-8') as f:
+                return load(f)
+        except (JSONDecodeError, FileNotFoundError):
+            self.dump({})
+            return {}
 
     def dump(self, data:dict) -> bool:
         with open(self.path, 'w', encoding='utf-8') as f:
@@ -258,7 +267,7 @@ def copy(src:str, dst:str, ignore:list = [], return_format:str = '{mode}: {src} 
 
     >>> copy()
     Traceback (most recent call last):
-    ...
+    ... 
     TypeError: copy() missing 2 required positional arguments: 'src' and 'dst'
     """
     if not src or not dst:
@@ -280,20 +289,14 @@ def copy(src:str, dst:str, ignore:list = [], return_format:str = '{mode}: {src} 
 
 #// https://stackoverflow.com/questions/61689391/error-with-simple-subclassing-of-pathlib-path-no-flavour-attribute
 class Path(type(_Path()), _Path):
-    def __new__(cls, *args, **kwargs):
-        return super().__new__(cls, *args, **kwargs)
-    
-    def __init__(self, path: str):
-        self.path = path
-        self.exist = exists(path)
-
     def not_exist_create(self, create_file:bool = True):
+        existed = self.exists()
         if self.suffix:
             self.parent.mkdir(parents=True, exist_ok=True)
             if create_file: self.touch(exist_ok=True)
         else:  # No file extension, treated as a directory.
             self.mkdir(parents=True, exist_ok=True)
-        return not self.exist
+        return not existed
     
     @overload
     def get_all_suffix(self) -> Optional[list[_Path]]: ...
@@ -322,10 +325,9 @@ class Path(type(_Path()), _Path):
 
     @property
     def type(self) -> Optional[Literal['dir', 'file']]:
-        src = self.path
-        if isdir(src):
+        if self.is_dir():
             return 'dir'
-        elif isfile(src):
+        elif self.is_file():
             return 'file'
         else:
             return None
@@ -435,7 +437,7 @@ def list2str(_list:list):
 
 def none2precent(obj:object):
     """
-    The original object if it is truthy, otherwise "%".
+    The original object if it is truthy, otherwise "%."
 
     Examples:
         >>> none2precent(5)
@@ -468,7 +470,7 @@ def manage_file_count(dst_folder:Union[str,Path], pattern:str, keep_latest:int =
     Manage the number of archives and only keep the latest specified number.
 
     :param dst_folder: The path to the target archives.
-    :param pattern: Patterns matching archives, E.g., 'home_backup_{time}.db'。
+    :param pattern: Patterns matching archives, E.g., 'home_backup_{time}.db'??
     :param keep_latest: Latest quantity to keep.
     :param src: Source file path.
     """

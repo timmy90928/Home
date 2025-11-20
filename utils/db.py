@@ -16,7 +16,7 @@ class database:
     2023-08-12
     """
     def __init__(self,filename:str) -> None:
-        assert '.db' in filename,'[FileError] 資料庫應為 .db 檔.'
+        assert '.db' in str(filename),'[FileError] 資料庫應為 .db 檔.'
         self.conn = connect(filename,check_same_thread=False)
         self.cursor:Cursor = self.conn.cursor()
 

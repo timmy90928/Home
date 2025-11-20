@@ -137,6 +137,7 @@
                     <p>{{ _('User Settings') }}</p>
                 </a>
             </li>
+            {% if current_user.rolenum <= 1 %}
             <li class="panel-icon">
                 <a href="/server/setting">
                     <img src="{{ url_for('static', filename='picture/setting.png') }}" alt="設定" class="my-icons" />
@@ -149,6 +150,7 @@
                     <p>{{ _('User Manage') }}</p>
                 </a>
             </li>
+            {% endif %}
         </ul>
         
    

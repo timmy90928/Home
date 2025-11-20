@@ -12,31 +12,40 @@ def index():
         directories = [item.name for item in path.iterdir() if item.is_dir()]
         numeric_data = [int(item) for item in directories if item.isdigit()]
 
-        year = request.args.get('year', max(numeric_data))
-        path_year = Path(_p).joinpath(f'{year}')
-        directories = [item for item in path_year.iterdir()]
+        if numeric_data:
+            max_year = max(numeric_data)
+            min_year = min(numeric_data)
+            year = request.args.get('year', max_year)
+            path_year = Path(_p).joinpath(f'{year}')
+            directories = [item for item in path_year.iterdir()]
 
-        datas = []
-        for directory in directories:
-            try:
-                blog_cfg = json(str(directory.joinpath('config.json')), create=False)
-            except:
-                blog_cfg = {}
+            datas = []
+            for directory in directories:
+                try:
+                    blog_cfg = json(str(directory.joinpath('config.json')), create=False)
+                except:
+                    blog_cfg = {}
 
-            blog_cfg['path_name'] = directory.name
-            blog_cfg['title'] = blog_cfg.get('title', directory.name.split(' ')[1])
-            blog_cfg['date'] = blog_cfg.get('date', directory.name.split(' ')[0])
-            blog_cfg['folder'] = blog_cfg.get('folder', 'favorite')
-            blog_cfg['path'] = str(directory.joinpath(blog_cfg['folder']) if directory.joinpath(blog_cfg['folder']).is_dir() else directory)
-            blog_cfg['token'] = token.generate({'year': year, 'name': blog_cfg['path_name'], 'path': blog_cfg['path']})
-            blog_cfg['logo'] = blog_cfg.get('logo', current.config.get('blog/logo',"logo.JPG"))
-            blog_cfg['text'] = blog_cfg.get('text', '')
+                blog_cfg['path_name'] = directory.name
+                blog_cfg['title'] = blog_cfg.get('title', directory.name.split(' ')[1])
+                blog_cfg['date'] = blog_cfg.get('date', directory.name.split(' ')[0])
+                blog_cfg['folder'] = blog_cfg.get('folder', 'favorite')
+                blog_cfg['path'] = str(directory.joinpath(blog_cfg['folder']) if directory.joinpath(blog_cfg['folder']).is_dir() else directory)
+                blog_cfg['token'] = token.generate({'year': year, 'name': blog_cfg['path_name'], 'path': blog_cfg['path']})
+                blog_cfg['logo'] = blog_cfg.get('logo', current.config.get('blog/logo',"logo.JPG"))
+                blog_cfg['text'] = blog_cfg.get('text', '')
 
-            datas.append(blog_cfg)
+                datas.append(blog_cfg)
+        else:
+            max_year = int(now_time('%Y'))
+            min_year = max_year
+            year = max_year
+            datas = []
+
     else:
         abort(500, response=gettext("Blog path not set."))
     
-    return render_template('index.html', max_year=max(numeric_data), min_year=min(numeric_data), datas=datas, year=year)
+    return render_template('index.html', max_year=max_year, min_year=min_year, datas=datas, year=year)
 
 @root_bp.route('/blog/<cfg_token>', methods=['GET'])
 def blog_place(cfg_token):
