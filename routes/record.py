@@ -32,7 +32,7 @@ JOIN AverageIntervals ai ON r.event = ai.event
 WHERE r.rn = 1;
 """
 
-HEADS = ['流水號','時間', "與上次之間格(天)","備註","編輯","刪除"]
+HEADS = ['流水號','時間', "與上次之間格(天)","備註"]
 HEADS_SQL = "id,event,strftime('%Y-%m-%d', timestamp, 'unixepoch','localtime'),interval,note"
 
 @record_bp.route('/')
@@ -46,7 +46,7 @@ def index_record():
 @login_required
 def record_event(event):
     datas = current.db.get_col('Record',HEADS_SQL, {'event': event}, customize=' ORDER BY timestamp DESC')
-    datas = [add_small_button(id,t, i, n, blue=['編輯',f'/record/edit/{id}']) for id,e, t, i, n in datas]
+    datas = [add_small_button(id,t, i, n) for id,e, t, i, n in datas]
 
     return render_template('record/record.html', heads=HEADS, datas=datas, event=event)
 
