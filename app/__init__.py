@@ -74,7 +74,7 @@ def track_connection() -> None:
 
 @APP.after_request
 def log_status_code(response:Response):
-
+    response.cache_control.max_age = 5
     ###* Logger ###
     ip = request.remote_addr
     page = request.path

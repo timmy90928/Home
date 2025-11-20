@@ -1,6 +1,7 @@
 from utils.utils import now_time as _now_time
 from utils.utils import get_data_path as _get_data_path
 from utils.utils import Path as _Path
+from utils.utils import timedelta as _timedelta
 from flask_babel import gettext
 
 APPNAME = 'Home'
@@ -18,6 +19,7 @@ class BaseConfig:
     COPYRIGHT = 'Copyright © 2024-2025 Wei-Wen Wu.All rights reserved'
     
     SERVER_RUN_TIME  = _now_time()
+    SEND_FILE_MAX_AGE_DEFAULT = _timedelta(hours=1)
     MAX_CONTENT_LENGTH = 1024 * 1024 * 1024 # Set the maximum upload file size to 1024MB (1GB).
 
     MOBILE = {True: gettext('Mobile'), False: gettext('Desktop')}
@@ -33,7 +35,7 @@ class DevelopmentConfig(BaseConfig):
 
 class ProductionConfig(BaseConfig):
     DEBUG = False
-    DATABASE_URI = DATAPATH.joinpath('writable', 'home.db')
+    DATABASE_URI = str(DATAPATH.joinpath('writable', 'home.db').absolute())
     SQLALCHEMY_DATABASE_URI = _create_sqlite_uri(DATABASE_URI)
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 

@@ -23,7 +23,8 @@ def edit(id):
     if request.method == 'POST':
         with SkipError():
             file = check_file(request)
-            headshot_path = Path(current.config['UPLOAD_FOLDER']).joinpath("headshot")
+            headshot_path = Path(current.config['folder/upload']).joinpath("headshot")
+            headshot_path.not_exist_create(create_file=False)
             headshot_path.joinpath(f"headshot_user_{id}").del_all_suffix()
 
             file.save(headshot_path.joinpath(f"headshot_user_{id}.{file.filename.split('.')[-1]}"))

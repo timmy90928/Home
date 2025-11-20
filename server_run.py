@@ -26,6 +26,6 @@ if __name__ == "__main__":
             host='0.0.0.0',
             port=928, 
             threads=8,
-            connection_limit=10,  # 最大連線數
+            connection_limit=100,  # 最大連線數
         )
     

@@ -24,7 +24,7 @@ class User(_UserMixin):
         self.username = username
         self.name = name
         self.role = role
-        self.rolenum = roles[role]
+        self.rolenum = roles[role].value
 current_user:User = _current_user
 
 ### current ###
