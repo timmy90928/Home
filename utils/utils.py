@@ -1,6 +1,8 @@
 from datetime import timedelta,datetime,timedelta
 from shutil import copy2, rmtree, ignore_patterns, copytree
-from os import environ,mkdir, name as osname
+from os import environ,mkdir, name as osname, kill as _kill, getpid as _getpid, execv as _execv
+from sys import executable as _sys_executable, argv as _sys_argv
+from signal import SIGINT
 from os.path import isfile, isdir, split as path_split,join, abspath, exists, getctime
 from base64 import b64encode,b64decode
 from urllib.parse import quote, unquote
@@ -14,6 +16,9 @@ from PIL import Image
 from threading import Thread
 import webbrowser
 from typing import overload, Literal, Optional
+
+def process_shutdown(): _kill(_getpid(), SIGINT)
+def process_restart(): _execv(_sys_executable, [_sys_executable] + _sys_argv)
 
 def hash(text:str) -> str:
     """
@@ -153,6 +158,7 @@ class json:
             return False
         
 from time import sleep
+from requests import post as requests_post
 class SysTray(_icon):
     """
     >>> tray = SysTray('Title')
@@ -175,14 +181,21 @@ class SysTray(_icon):
         return StrayMenu(
             MenuItem("管理伺服器", self.open_sever_info),
             MenuItem("顯示IP", self.show_ip),
+            MenuItem("重新啟動", self.restart),
             MenuItem("結束", self.on_quit),
             )
 
     def on_quit(self, icon, item):
         self.notify("伺服器已關閉","結束通知")
         self.stop()
-        exit(0)
+        process_shutdown()
     
+    def restart(self, icon, item):
+        
+        self.notify("伺服器關閉中...","結束通知")
+        self.stop()
+        process_restart()
+
     def show_ip(self, icon, item):
         from utils.web import get_external_ip, get_local_ip
         self.notify(f"內網IP:{get_local_ip()}\n外網IP:{get_external_ip()}","IP通知")
@@ -321,7 +334,8 @@ class Path(type(_Path()), _Path):
             for path in paths:
                 path.unlink()
         else:
-            self.unlink()
+            if self.exists():
+                self.unlink()
 
     @property
     def type(self) -> Optional[Literal['dir', 'file']]:

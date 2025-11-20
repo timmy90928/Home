@@ -10,6 +10,14 @@ server_bp = Blueprint('server', __name__, url_prefix='/server')
 def index():
     return redirect('/server/info')
 
+@server_bp.route('/shutdown', methods=['POST','GET'])
+def shutdown():
+    process_shutdown()
+
+@server_bp.route('/restart', methods=['POST','GET'])
+def restart():
+    process_restart()
+
 @server_bp.route('/info', methods=['GET'])
 @login_required
 def info():
